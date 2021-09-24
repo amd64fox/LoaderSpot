@@ -1,7 +1,7 @@
 <center>
     <h1 align="center">LoaderSpot
 </h1>
-    <h4 align="center">A tool for downloading the Spotify Windows Desktop client.</h4
+    <h4 align="center">A tool for downloading the full Spotify Windows Desktop client.</h4
 </center>
 
       
