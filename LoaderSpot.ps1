@@ -1,4 +1,3 @@
-﻿
 $version_spoti = Read-Host -Prompt "Enter the Spotify version, for example 1.1.68.632.g2b11de83"
 
 
