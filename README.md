@@ -15,7 +15,7 @@
  * * *
       
 <center>
-<h3 align="center">I also created a document from the versions I found, you can see it <a href="https://cutt.ly/8EH6NuH">here</a></h4    
+<h3 align="center">I also created an updatable document, with all the links I found. You can see it <a href="https://cutt.ly/8EH6NuH">here</a></h4    
 </center>
         
 
