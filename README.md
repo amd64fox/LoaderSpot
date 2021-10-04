@@ -1,7 +1,8 @@
 <center>
     <h1 align="center">LoaderSpot
 </h1>
-    <h3 align="center">A tool for downloading the full Spotify Windows Desktop client.</h4
+    <h2 align="center">A tool for downloading the full Spotify Windows Desktop client.</h4
+        
 </center>
 
       
@@ -10,3 +11,11 @@
 - Download and run [LoaderSpot.bat](https://cutt.ly/pEvhtdr)
 - Follow the further instructions on the screen
       
+        
+ * * *
+      
+<center>
+<h3 align="center">I also created a document from the versions I found, you can see it <a href="https://cutt.ly/8EH6NuH">here</a></h4    
+</center>
+        
+
