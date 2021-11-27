@@ -1,3 +1,15 @@
+<p align="center">                
+      <a href="https://t.me/amd64fox"><img src="https://img.shields.io/badge/%40Amd64fox-%40Amd64fox-blue.svg?style=flat&logo=telegram&label=Telegram"></a>
+      <a href="https://cutt.ly/8EH6NuH"><img src="https://img.shields.io/badge/Excel%20table--brightgreen.svg?style=flat&logo=microsoftexcel&label=Excel table"></a>
+      <a href="https://github.com/amd64fox/LoaderSpot/releases"><img src="https://img.shields.io/github/downloads/amd64fox/LoaderSpot/total.svg?style=flat&label=Total downloads"></a>
+      </p>
+
+      
+
+
+
+
+
 <center>
     <h1 align="center">LoaderSpot
 </h1>
