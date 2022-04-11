@@ -20,7 +20,10 @@
       
 - To download the version you need, you need to find out its full name, for example, you can find it [here](https://www.spotify.com/us/opensource)
 - The version found should look something like this: 1.1.68.632.g2b11de83
-- Download and run [LoaderSpot.bat](https://cutt.ly/pEvhtdr)
+- Download and run 
+  - [LoaderSpot.bat](https://cutt.ly/pEvhtdr)
+  - [LoaderSpot_Gui.bat](https://cutt.ly/9FbGCtv)
+  - [LoaderSpot_Gui_Ru.bat](https://cutt.ly/UFbG7XG)
 - Follow the further instructions on the screen
       
         
