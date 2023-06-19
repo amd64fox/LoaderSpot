@@ -1,0 +1,23 @@
+name: Version Check
+on:
+  repository_dispatch:
+    types: [webhook-event]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Python script
+        run: python ${{ github.workspace }}/upd.py -v ${{ github.event.client_payload.v }} -s "${{ github.event.client_payload.s }}" -u "${{ secrets.GOOGLE_APPS_URL }}"
