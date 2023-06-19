@@ -39,7 +39,7 @@ async def send_request(json_data):
 async def main():
 
     start_number = 0
-    before_enter = 4500
+    before_enter = 5500
 
     numbers = start_number
     find_url = []
