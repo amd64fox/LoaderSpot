@@ -27,6 +27,7 @@ async def check_url(session, url, platform_name):
         pass
     return None
 
+
 async def send_request(json_data):
     url = u + json_data
     async with aiohttp.ClientSession() as session:
@@ -37,6 +38,7 @@ async def send_request(json_data):
                 system_response = soup.find('div', style='text-align:center;font-family:monospace;margin:50px auto 0;max-width:600px').text
                 print(f'Ответ от Google apps script: {system_response}')
 
+
 async def main():
     start_number = 0
     before_enter = 5500
@@ -45,14 +47,13 @@ async def main():
     find_url = []
 
     win32 = "https://upgrade.scdn.co/upgrade/client/win32-x86/spotify_installer-{version}-{numbers}.exe"
-    win64 = "https://upgrade.scdn.co/upgrade/client/win32-x86_64/spotify_installer-{version_spoti}-{numbers}.exe"
+    win64 = "https://upgrade.scdn.co/upgrade/client/win32-x86_64/spotify_installer-{version}-{numbers}.exe"
     win_arm64 = "https://upgrade.scdn.co/upgrade/client/win32-arm64/spotify_installer-{version}-{numbers}.exe"
     osx = "https://upgrade.scdn.co/upgrade/client/osx-x86_64/spotify-autoupdate-{version}-{numbers}.tbz"
     osx_arm64 = "https://upgrade.scdn.co/upgrade/client/osx-arm64/spotify-autoupdate-{version}-{numbers}.tbz"
 
     async with aiohttp.ClientSession() as session:
         tasks = []
-
         url_templates = [win32, win64, win_arm64, osx, osx_arm64]
         platform_names = ["WIN32", "WIN64", "WIN-ARM64", "OSX", "OSX-ARM64"]
 
@@ -66,18 +67,18 @@ async def main():
                 numbers += 1
 
         results = []
-
         for task in asyncio.as_completed(tasks):
             result = await task
             if result is not None:
                 find_url.append(result)
+
     if find_url:
         platform_urls = {}
         for item in find_url:
             if isinstance(item, tuple):
                 url, platform_name = item
                 if platform_name not in platform_urls:
-                    platform_urls[platform_name] = str(url)  # Преобразование URL в строку
+                    platform_urls[platform_name] = str(url)
             else:
                 if "unknown" not in platform_urls:
                     platform_urls["unknown"] = "unknown"
