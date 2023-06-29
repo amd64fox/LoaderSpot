@@ -5,9 +5,9 @@ import argparse
 from bs4 import BeautifulSoup
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-v", required=True)
-parser.add_argument("-s", required=True)
-parser.add_argument("-u", required=True)
+parser.add_argument('-v', required=True)
+parser.add_argument('-s', required=True)
+parser.add_argument('-u', required=True)
 
 args = parser.parse_args()
 version = args.v
@@ -27,20 +27,15 @@ async def check_url(session, url, platform_name):
         pass
     return None
 
-
 async def send_request(json_data):
     url = u + json_data
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             if response.status == 200:
                 data = await response.text()
-                soup = BeautifulSoup(data, "html.parser")
-                system_response = soup.find(
-                    "div",
-                    style="text-align:center;font-family:monospace;margin:50px auto 0;max-width:600px",
-                ).text
-                print(f"Ответ от Google apps script: {system_response}")
-
+                soup = BeautifulSoup(data, 'html.parser')
+                system_response = soup.find('div', style='text-align:center;font-family:monospace;margin:50px auto 0;max-width:600px').text
+                print(f'Ответ от Google apps script: {system_response}')
 
 async def main():
     start_number = 0
@@ -64,7 +59,9 @@ async def main():
         for url_template, platform_name in zip(url_templates, platform_names):
             numbers = start_number
             while numbers <= before_enter:
-                url = url_template.format(version=version, numbers=numbers)
+                url = url_template.format(
+                    version=version, numbers=numbers
+                )
                 tasks.append(check_url(session, url, platform_name))
                 numbers += 1
 
@@ -80,20 +77,21 @@ async def main():
             if isinstance(item, tuple):
                 url, platform_name = item
                 if platform_name not in platform_urls:
-                    platform_urls[platform_name] = str(
-                        url
-                    )  # Преобразование URL в строку
+                    platform_urls[platform_name] = str(url)  # Преобразование URL в строку
             else:
                 if "unknown" not in platform_urls:
                     platform_urls["unknown"] = "unknown"
         platform_urls["version"] = version
         platform_urls["source"] = source
         req_ver = json.dumps(platform_urls)
-        print(f"Версия {version} отправлена")
+        print(f'Версия {version} отправлена')
         await send_request(req_ver)
     else:
-        print(f"Версия {version} не найдена")
-        data = {"unknown": "unknown", "version": version}
+        print(f'Версия {version} не найдена')
+        data = {
+            "unknown": "unknown",
+            "version": version
+        }
         req_ver = json.dumps(data)
         await send_request(req_ver)
 
