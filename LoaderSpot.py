@@ -34,16 +34,18 @@ async def main(version_spoti=""):
     find_url = []
 
     win32 = "https://upgrade.scdn.co/upgrade/client/win32-x86/spotify_installer-{version_spoti}-{numbers}.exe"
+    win64 = "https://upgrade.scdn.co/upgrade/client/win32-x86_64/spotify_installer-{version_spoti}-{numbers}.exe"
     win_arm64 = "https://upgrade.scdn.co/upgrade/client/win32-arm64/spotify_installer-{version_spoti}-{numbers}.exe"
     osx = "https://upgrade.scdn.co/upgrade/client/osx-x86_64/spotify-autoupdate-{version_spoti}-{numbers}.tbz"
     osx_arm64 = "https://upgrade.scdn.co/upgrade/client/osx-arm64/spotify-autoupdate-{version_spoti}-{numbers}.tbz"
 
     print("\nSelect the link type for the search:")
     print("[1] WIN32")
-    print("[2] WIN-ARM64")
-    print("[3] OSX")
-    print("[4] OSX-ARM64")
-    print("[5] All platforms")
+    print("[2] WIN64")  
+    print("[3] WIN-ARM64")
+    print("[4] OSX")
+    print("[5] OSX-ARM64")
+    print("[6] All platforms")
 
     choices = []
     while not choices:
@@ -60,19 +62,21 @@ async def main(version_spoti=""):
             elif c == "4":
                 choices.append("4")
             elif c == "5":
-                choices = ["1", "2", "3", "4"]
+                choices.append("5") 
+            elif c == "6":
+                choices = ["1", "2", "3", "4", "5"]
                 break
             else:
-                print("Value should be in the range from 1 to 5")
+                print("Value should be in the range from 1 to 6")
 
     print("\nSearching...\n")
 
     async with aiohttp.ClientSession() as session:
         tasks = []
 
-        if "5" in choices:
-            url_templates = [win32, win_arm64, osx, osx_arm64]
-            platform_names = ["WIN32", "WIN-ARM64", "OSX", "OSX-ARM64"]
+        if "6" in choices:  # Updated condition to include option 6
+            url_templates = [win32, win64, win_arm64, osx, osx_arm64]
+            platform_names = ["WIN32", "WIN64", "WIN-ARM64", "OSX", "OSX-ARM64"]
             for url_template, platform_name in zip(url_templates, platform_names):
                 numbers = int(start_number)
                 while numbers <= int(before_enter):
@@ -87,12 +91,15 @@ async def main(version_spoti=""):
                     url_template = win32
                     platform_name = "WIN32"
                 elif choice == "2":
+                    url_template = win64 
+                    platform_name = "WIN64" 
+                elif choice == "3":
                     url_template = win_arm64
                     platform_name = "WIN-ARM64"
-                elif choice == "3":
+                elif choice == "4":
                     url_template = osx
                     platform_name = "OSX"
-                elif choice == "4":
+                elif choice == "5":
                     url_template = osx_arm64
                     platform_name = "OSX-ARM64"
                 numbers = int(start_number)
@@ -124,11 +131,14 @@ async def main(version_spoti=""):
                     platform_urls["Unknown"] = []
                 platform_urls["Unknown"].append(item)
 
-        for platform_name, urls in platform_urls.items():
-            print(f"{platform_name}:")
-            for url in urls:
-                print(url)
-            print()
+        sorting_order = ["WIN32", "WIN64", "WIN-ARM64", "OSX", "OSX-ARM64"]
+
+        for platform_name in sorting_order:
+            if platform_name in platform_urls:
+                print(f"{platform_name}:")
+                for url in platform_urls[platform_name]:
+                    print(url)
+                print()
     else:
         print("Nothing found, consider increasing the search range\n")
 
@@ -149,5 +159,6 @@ async def main(version_spoti=""):
         return
     else:
         print("Invalid choice. Exiting the code.")
+
 
 asyncio.run(main())
