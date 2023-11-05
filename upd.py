@@ -1,6 +1,7 @@
 import aiohttp
 import asyncio
 import json
+import re
 import argparse
 from bs4 import BeautifulSoup
 
@@ -36,8 +37,25 @@ async def send_request(json_data):
                 data = await response.text()
                 soup = BeautifulSoup(data, 'html.parser')
                 system_response = soup.find('div', style='text-align:center;font-family:monospace;margin:50px auto 0;max-width:600px').text
-                print(f'Ответ от Google apps script: {system_response}')
+                print(f'Ответ от GAS: {system_response}')
 
+def get_urls(find_url):
+    platform_urls = {}
+    version_pattern = re.compile(r'-([0-9]+)\.(exe|tbz)')
+
+    for url, platform in find_url:
+        match = version_pattern.search(str(url))
+        if match:
+            version_number = int(match.group(1))
+            if platform in platform_urls:
+                # Сравниваем и сохраняем URL (если найдено больше одного url для платформы, то выбираем с самой большой ревизией)
+                current_version = int(version_pattern.search(platform_urls[platform]).group(1))
+                if version_number > current_version:
+                    platform_urls[platform] = str(url)
+            else:
+                platform_urls[platform] = str(url)
+
+    return platform_urls
 
 async def main():
     start_number = 0
@@ -73,18 +91,10 @@ async def main():
                 find_url.append(result)
 
     if find_url:
-        platform_urls = {}
-        for item in find_url:
-            if isinstance(item, tuple):
-                url, platform_name = item
-                if platform_name not in platform_urls:
-                    platform_urls[platform_name] = str(url)
-            else:
-                if "unknown" not in platform_urls:
-                    platform_urls["unknown"] = "unknown"
-        platform_urls["version"] = version
-        platform_urls["source"] = source
-        req_ver = json.dumps(platform_urls)
+        latest_urls = get_urls(find_url)
+        latest_urls["version"] = version
+        latest_urls["source"] = source
+        req_ver = json.dumps(latest_urls, ensure_ascii=False, indent=2)
         print(f'Версия {version} отправлена')
         await send_request(req_ver)
     else:
