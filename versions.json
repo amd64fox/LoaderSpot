@@ -1804,5 +1804,19 @@
         "arm64": ""
       }
     }
+  },
+  "1.1.59.710": {
+    "fullversion": "1.1.59.710.g134abcca",
+    "links": {
+      "win": {
+        "x86": "https://upgrade.scdn.co/upgrade/client/win32-x86/spotify_installer-1.1.59.710.g134abcca-27.exe",
+        "x64": "",
+        "arm64": ""
+      },
+      "mac": {
+        "intel": "https://upgrade.scdn.co/upgrade/client/osx-x86_64/spotify-autoupdate-1.1.59.710.g134abcca-28.tbz",
+        "arm64": ""
+      }
+    }
   }
 }
