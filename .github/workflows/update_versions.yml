@@ -32,5 +32,5 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add versions.json
-        git commit -m "Update version to ${{ github.event.inputs.version }}"
+        git commit -m "Added version ${{ github.event.inputs.version }}"
         git push
