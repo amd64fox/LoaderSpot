@@ -6,7 +6,9 @@ on:
       datajson:
         description: 'Version to update'
         required: true
-
+      version:
+        description: 'Another version parameter'
+        required: true  
 jobs:
   update-version:
     runs-on: ubuntu-latest
@@ -30,5 +32,5 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add versions.json
-        git commit -m "Update version"
+        git commit -m "Update version to ${{ github.event.inputs.version }}"
         git push
