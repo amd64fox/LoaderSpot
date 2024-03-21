@@ -59,7 +59,7 @@ def get_urls(find_url):
 
 async def main():
     start_number = 0
-    before_enter = 5500
+    before_enter = 6000
 
     numbers = start_number
     find_url = []
