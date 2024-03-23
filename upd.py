@@ -138,14 +138,14 @@ async def main():
                         find_url.append(result)
                 latest_urls = get_urls(find_url)
                 if len(latest_urls) == len(platform_names):
-                    pre_version(latest_urls)
+                    await pre_version(latest_urls)
                     return
 
     if find_url:
         latest_urls = get_urls(find_url)
-        pre_version(latest_urls)
+        await pre_version(latest_urls)
     else:
-        pre_version(False)
+        await pre_version(False)
 
 
 asyncio.run(main())
