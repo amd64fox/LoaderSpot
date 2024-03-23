@@ -43,7 +43,7 @@ async def check_url(session, url, platform_name):
     return None
 
 
-def pre_version(latest_urls):
+async def pre_version(latest_urls):
     message = f'Версия {version} {"отправлена" if latest_urls else "не найдена"}'
     print(message)
 
