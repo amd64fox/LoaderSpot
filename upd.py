@@ -81,7 +81,7 @@ def get_urls(find_url):
 async def main():
     start_number = 0
     before_enter = 1000
-    additional_searches = 8  # Максимальное кол-во шагов для дополнительного поиска
+    additional_searches = 10  # Максимальное кол-во шагов для дополнительного поиска
     increment = 1000  # Размер шага
 
     numbers = start_number
