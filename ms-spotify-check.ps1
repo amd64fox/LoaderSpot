@@ -45,7 +45,9 @@ function Get-LatestSpotifyVersion {
     }
     catch {
         Write-Log "Error executing request: $_"
-        Write-Log "Error code: $($_.Exception.Response.StatusCode.value__)"
+        if ($_.Exception.Response) {
+            Write-Log "Error code: $($_.Exception.Response.StatusCode.value__)"
+        }
         Write-Log "Error message: $($_.Exception.Message)"
         return $null
     }
@@ -120,6 +122,7 @@ function Compare-SpotifyVersions {
     Write-Log "Comparison of versions..."
     $ProgressPreference = 'SilentlyContinue'
     $jsonContent = Invoke-WebRequest -Uri $jsonUrl | ConvertFrom-Json
+    $jsonContent."1.2.47.366".fullversion = "1.2.48.366.g0d3bd570"
     foreach ($jsonVersion in $jsonContent.PSObject.Properties) {
         if ($jsonVersion.Value.fullversion -eq $version) {
             Write-Log "New version not found"
@@ -130,19 +133,29 @@ function Compare-SpotifyVersions {
     return $false
 }
 
-function Submit-NewVersion {
-    param ($version, $latestFileInfo)
-    Write-Log "Submitting to form..."
-    $Parameters = @{
-        Uri    = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSdqIxSjqt2PcjBlQzhvwqc4QckfWuq5qqWsrdpoTidQHsPGpw/formResponse'
-        Method = 'POST'
-        Body   = @{
-            'entry.1104502920' = $version
-            'entry.1319854718' = $latestFileInfo
-        }   
+function Trigger-GitAction {
+    param (
+        [string]$v,
+        [string]$s
+    )
+
+    $apiUrl = "https://api.github.com/repos/amd64fox/LoaderSpot/dispatches"
+
+    $payload = @{
+        event_type     = "webhook-event"
+        client_payload = @{
+            v = $v
+            s = $s
+        }
+    } | ConvertTo-Json
+
+    $headers = @{
+        "Accept"        = "application/vnd.github.everest-preview+json"
+        "Authorization" = "Bearer " + $env:Token
+        "Content-Type"  = "application/json"
     }
-    $null = Invoke-WebRequest -UseBasicParsing @Parameters
-    Write-Log "The new version has been successfully submitted to the form"
+
+    Invoke-RestMethod -Uri $apiUrl -Method Post -Headers $headers -Body $payload
 }
 
 # Main
@@ -162,18 +175,8 @@ if ($spotifyExePath) {
         $jsonUrl = "https://raw.githubusercontent.com/amd64fox/LoaderSpot/refs/heads/main/versions.json"
         $versionExists = Compare-SpotifyVersions -version $version -jsonUrl $jsonUrl
         if (-not $versionExists) {
-            $latestFileInfo = @"
-Name: $($latestFile.FileName)
-Data: $($latestFile.DateTime.ToString('yyyy-MM-dd'))
-Time: $($latestFile.DateTime.ToString('HH:mm:ss'))
-Size: $($latestFile.Size)
-Url: $($latestFile.Url)
-$env:TAG
-"@
-            Submit-NewVersion -version $version -latestFileInfo $latestFileInfo
-        }
-        else {
-
+            Trigger-GitAction -v $version -s "[Microsoft Store](https://apps.microsoft.com/detail/9ncbcszsjrsb)"
+            Write-Log "Sent for search and processing in GAS"
         }
     }
     else {
