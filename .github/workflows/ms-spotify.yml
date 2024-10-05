@@ -1,0 +1,20 @@
+name: check Spotify MS
+
+on:
+  schedule:
+    - cron: '35 * * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run PowerShell script
+        shell: pwsh
+        run: ./ms-spotify-check.ps1
+        env:
+          TAG: ${{ secrets.TAG }}
