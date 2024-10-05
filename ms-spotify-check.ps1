@@ -122,7 +122,6 @@ function Compare-SpotifyVersions {
     Write-Log "Comparison of versions..."
     $ProgressPreference = 'SilentlyContinue'
     $jsonContent = Invoke-WebRequest -Uri $jsonUrl | ConvertFrom-Json
-    $jsonContent."1.2.47.366".fullversion = "1.2.48.366.g0d3bd570"
     foreach ($jsonVersion in $jsonContent.PSObject.Properties) {
         if ($jsonVersion.Value.fullversion -eq $version) {
             Write-Log "New version not found"
