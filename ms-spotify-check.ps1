@@ -141,11 +141,9 @@ function Compare-SpotifyVersions {
         $jsonContent = Invoke-WebRequest -Uri $jsonUrl | ConvertFrom-Json
         foreach ($jsonVersion in $jsonContent.PSObject.Properties) {
             if ($jsonVersion.Value.fullversion -eq $version) {
-                Write-Log "New version not found"
                 return $true
             }
         }
-        Write-Log "New version found"
         return $false
     }
     catch {
@@ -220,6 +218,7 @@ function Main {
 
     switch ($versionExists) {
         $false {
+            Write-Log "New version found"
             Trigger-GitAction -v $version -s "[Microsoft Store](https://apps.microsoft.com/detail/9ncbcszsjrsb)"
             Write-Log "Sent for search and processing in GAS"
         }
