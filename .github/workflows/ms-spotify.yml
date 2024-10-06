@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Run PowerShell script
+      - name: run ms-spotify-check.ps1
         shell: pwsh
         run: ./ms-spotify-check.ps1
         env:

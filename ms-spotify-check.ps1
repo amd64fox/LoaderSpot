@@ -11,11 +11,9 @@ function Write-Log {
 function Get-LatestSpotifyVersion {
     Write-Log "Getting data from rg-adguard..."
     
-    # Setting up a session
     $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
     $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
 
-    # Request parameters
     $url = "https://store.rg-adguard.net/api/GetFiles"
     $body = "type=url&url=https://apps.microsoft.com/detail/9ncbcszsjrsb&gl=US&ring=RP&lang=en"
     $headers = @{
@@ -45,10 +43,6 @@ function Get-LatestSpotifyVersion {
     }
     catch {
         Write-Log "Error executing request: $_"
-        if ($_.Exception.Response) {
-            Write-Log "Error code: $($_.Exception.Response.StatusCode.value__)"
-        }
-        Write-Log "Error message: $($_.Exception.Message)"
         return $null
     }
 
@@ -75,15 +69,32 @@ function Get-LatestSpotifyVersion {
 
     $filteredResults = $results | Where-Object { $_.FileName -match 'SpotifyAB\.SpotifyMusic_.+x86.+\.appx' }
     $latestFile = $filteredResults | Sort-Object -Property DateTime -Descending | Select-Object -First 1
-    Write-Log "Found: $($latestFile.FileName)"
+    
+    if ($latestFile) {
+        Write-Log "Found: $($latestFile.FileName)"
+    }
+    else {
+        Write-Log "No matching Spotify file found"
+    }
     return $latestFile
 }
 
 function Download-SpotifyAppx {
     param ($downloadUrl, $filePath)
+    if (-not $downloadUrl) {
+        Write-Log "Error: Download URL is empty or null"
+        return $false
+    }
     Write-Log "Downloading appx file..."
     $ProgressPreference = 'SilentlyContinue'
-    Invoke-WebRequest -Uri $downloadUrl -OutFile $filePath
+    try {
+        Invoke-WebRequest -Uri $downloadUrl -OutFile $filePath
+        return $true
+    }
+    catch {
+        Write-Log "Error downloading file: $_"
+        return $false
+    }
 }
 
 function Extract-SpotifyAppx {
@@ -96,6 +107,11 @@ function Extract-SpotifyAppx {
             $destPath = Join-Path $extractPath $_.Name
             [System.IO.Compression.ZipFileExtensions]::ExtractToFile($_, $destPath, $true)
         }
+        return $true
+    }
+    catch {
+        Write-Log "Error extracting files: $_"
+        return $false
     }
     finally {
         if ($zip -ne $null) {
@@ -121,15 +137,21 @@ function Compare-SpotifyVersions {
     param ($version, $jsonUrl)
     Write-Log "Comparison of versions..."
     $ProgressPreference = 'SilentlyContinue'
-    $jsonContent = Invoke-WebRequest -Uri $jsonUrl | ConvertFrom-Json
-    foreach ($jsonVersion in $jsonContent.PSObject.Properties) {
-        if ($jsonVersion.Value.fullversion -eq $version) {
-            Write-Log "New version not found"
-            return $true
+    try {
+        $jsonContent = Invoke-WebRequest -Uri $jsonUrl | ConvertFrom-Json
+        foreach ($jsonVersion in $jsonContent.PSObject.Properties) {
+            if ($jsonVersion.Value.fullversion -eq $version) {
+                Write-Log "New version not found"
+                return $true
+            }
         }
+        Write-Log "New version found"
+        return $false
     }
-    Write-Log "New version found"
-    return $false
+    catch {
+        Write-Log "Error comparing versions: $_"
+        return $null
+    }
 }
 
 function Trigger-GitAction {
@@ -154,34 +176,64 @@ function Trigger-GitAction {
         "Content-Type"  = "application/json"
     }
 
-    Invoke-RestMethod -Uri $apiUrl -Method Post -Headers $headers -Body $payload
+    try {
+        Invoke-RestMethod -Uri $apiUrl -Method Post -Headers $headers -Body $payload
+        Write-Log "Successfully triggered Git action"
+    }
+    catch {
+        Write-Log "Error triggering Git action: $_"
+    }
 }
 
-# Main
+function Main {
+    $latestFile = Get-LatestSpotifyVersion
+    if (-not $latestFile) {
+        Write-Log "Failed to get latest Spotify version"
+        return
+    }
+
+    $filePath = Join-Path $spotifyTempDir $latestFile.FileName
+    if (-not (Download-SpotifyAppx -downloadUrl $latestFile.Url -filePath $filePath)) {
+        Write-Log "Failed to download Spotify appx"
+        return
+    }
+
+    if (-not (Extract-SpotifyAppx -filePath $filePath -extractPath $spotifyTempDir)) {
+        Write-Log "Failed to extract Spotify appx"
+        return
+    }
+
+    $spotifyExePath = Get-ChildItem -Path $spotifyTempDir -Filter "Spotify.exe" -Recurse | Select-Object -First 1
+    if (-not $spotifyExePath) {
+        Write-Log "Spotify.exe not found"
+        return
+    }
+
+    $version = Get-SpotifyExeVersion -spotifyExePath $spotifyExePath.FullName
+    if (-not $version) {
+        Write-Log "Version not found in Spotify.exe"
+        return
+    }
+
+    $jsonUrl = "https://raw.githubusercontent.com/amd64fox/LoaderSpot/refs/heads/main/versions.json"
+    $versionExists = Compare-SpotifyVersions -version $version -jsonUrl $jsonUrl
+
+    switch ($versionExists) {
+        $false {
+            Trigger-GitAction -v $version -s "[Microsoft Store](https://apps.microsoft.com/detail/9ncbcszsjrsb)"
+            Write-Log "Sent for search and processing in GAS"
+        }
+        $null {
+            Write-Log "Error comparing versions"
+        }
+        Default {
+            Write-Log "No new version found"
+        }
+    }
+}
+
 $tempPath = [System.IO.Path]::GetTempPath()
 $spotifyTempDir = Join-Path $tempPath "Spotify"
 New-Item -Path $spotifyTempDir -ItemType Directory -Force | Out-Null
 
-$latestFile = Get-LatestSpotifyVersion
-$filePath = Join-Path $spotifyTempDir $latestFile.FileName
-Download-SpotifyAppx -downloadUrl $latestFile.Url -filePath $filePath
-Extract-SpotifyAppx -filePath $filePath -extractPath $spotifyTempDir
-
-$spotifyExePath = Get-ChildItem -Path $spotifyTempDir -Filter "Spotify.exe" -Recurse | Select-Object -First 1
-if ($spotifyExePath) {
-    $version = Get-SpotifyExeVersion -spotifyExePath $spotifyExePath.FullName
-    if ($version) {
-        $jsonUrl = "https://raw.githubusercontent.com/amd64fox/LoaderSpot/refs/heads/main/versions.json"
-        $versionExists = Compare-SpotifyVersions -version $version -jsonUrl $jsonUrl
-        if (-not $versionExists) {
-            Trigger-GitAction -v $version -s "[Microsoft Store](https://apps.microsoft.com/detail/9ncbcszsjrsb)"
-            Write-Log "Sent for search and processing in GAS"
-        }
-    }
-    else {
-        Write-Log "Version not found in Spotify.exe"
-    }
-}
-else {
-    Write-Log "Spotify.exe not found"
-}
+Main
