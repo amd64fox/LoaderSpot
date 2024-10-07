@@ -75,6 +75,8 @@ function Get-LatestSpotifyVersion {
     }
     else {
         Write-Log "No matching Spotify file found"
+        Write-Log "Response:"
+        Write-Log $html
     }
     return $latestFile
 }
