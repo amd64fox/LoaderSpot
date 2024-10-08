@@ -8,6 +8,38 @@ function Write-Log {
     Write-Host "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') - $Message"
 }
 
+function Invoke-WithRetry {
+    param (
+        [ScriptBlock]$ScriptBlock,
+        [int]$MaxAttempts = 3,
+        [int]$DelaySeconds = 5
+    )
+    
+    $attempt = 1
+    $success = $false
+
+    while (-not $success -and $attempt -le $MaxAttempts) {
+        try {
+            $result = & $ScriptBlock
+            $success = $true
+            return $result
+        }
+        catch {
+            Write-Log "Attempt $attempt failed: $_"
+            if ($attempt -lt $MaxAttempts) {
+                Write-Log "Retrying in $DelaySeconds seconds..."
+                Start-Sleep -Seconds $DelaySeconds
+            }
+            $attempt++
+        }
+    }
+
+    if (-not $success) {
+        Write-Log "All $MaxAttempts attempts failed."
+        return $null
+    }
+}
+
 function Get-LatestSpotifyVersion {
     Write-Log "Getting data from rg-adguard..."
     
@@ -37,14 +69,16 @@ function Get-LatestSpotifyVersion {
 
     $ProgressPreference = 'SilentlyContinue'
 
-    try {
-        $response = Invoke-WebRequest -Uri $url -Method "POST" -Body $body -WebSession $session -Headers $headers -UseBasicParsing
-        $html = $response.Content
+    $response = Invoke-WithRetry -ScriptBlock {
+        Invoke-WebRequest -Uri $url -Method "POST" -Body $body -WebSession $session -Headers $headers -UseBasicParsing
     }
-    catch {
-        Write-Log "Error executing request: $_"
+
+    if (-not $response) {
+        Write-Log "Failed to get response from rg-adguard after multiple attempts."
         return $null
     }
+
+    $html = $response.Content
 
     $trContents = [regex]::Matches($html, '(?s)<tr.*?>(.*?)</tr>') | ForEach-Object { $_.Groups[1].Value }
     $results = @()
@@ -89,14 +123,13 @@ function Download-SpotifyAppx {
     }
     Write-Log "Downloading appx file..."
     $ProgressPreference = 'SilentlyContinue'
-    try {
+    
+    $success = Invoke-WithRetry -ScriptBlock {
         Invoke-WebRequest -Uri $downloadUrl -OutFile $filePath
-        return $true
+        $true
     }
-    catch {
-        Write-Log "Error downloading file: $_"
-        return $false
-    }
+
+    return $success
 }
 
 function Extract-SpotifyAppx {
@@ -139,19 +172,22 @@ function Compare-SpotifyVersions {
     param ($version, $jsonUrl)
     Write-Log "Comparison of versions..."
     $ProgressPreference = 'SilentlyContinue'
-    try {
-        $jsonContent = Invoke-WebRequest -Uri $jsonUrl | ConvertFrom-Json
-        foreach ($jsonVersion in $jsonContent.PSObject.Properties) {
-            if ($jsonVersion.Value.fullversion -eq $version) {
-                return $true
-            }
-        }
-        return $false
+    
+    $jsonContent = Invoke-WithRetry -ScriptBlock {
+        Invoke-WebRequest -Uri $jsonUrl | ConvertFrom-Json
     }
-    catch {
-        Write-Log "Error comparing versions: $_"
+
+    if (-not $jsonContent) {
+        Write-Log "Failed to fetch version information after multiple attempts."
         return $null
     }
+
+    foreach ($jsonVersion in $jsonContent.PSObject.Properties) {
+        if ($jsonVersion.Value.fullversion -eq $version) {
+            return $true
+        }
+    }
+    return $false
 }
 
 function Trigger-GitAction {
@@ -176,12 +212,16 @@ function Trigger-GitAction {
         "Content-Type"  = "application/json"
     }
 
-    try {
+    $success = Invoke-WithRetry -ScriptBlock {
         Invoke-RestMethod -Uri $apiUrl -Method Post -Headers $headers -Body $payload
+        $true
+    }
+
+    if ($success) {
         Write-Log "Successfully triggered Git action"
     }
-    catch {
-        Write-Log "Error triggering Git action: $_"
+    else {
+        Write-Log "Failed to trigger Git action after multiple attempts"
     }
 }
 
