@@ -69,50 +69,51 @@ function Get-LatestSpotifyVersion {
 
     $ProgressPreference = 'SilentlyContinue'
 
+    $lastResponse = $null
     $response = Invoke-WithRetry -ScriptBlock {
-        Invoke-WebRequest -Uri $url -Method "POST" -Body $body -WebSession $session -Headers $headers -UseBasicParsing
-    }
-
-    if (-not $response) {
-        Write-Log "Failed to get response from rg-adguard after multiple attempts."
-        return $null
-    }
-
-    $html = $response.Content
-
-    $trContents = [regex]::Matches($html, '(?s)<tr.*?>(.*?)</tr>') | ForEach-Object { $_.Groups[1].Value }
-    $results = @()
-    foreach ($trContent in $trContents) {
-        if ($trContent -match '<a href="(http://tlu\.dl\.delivery\.mp\.microsoft\.com[^"]+)"[^>]*>([^<]+)</a>') {
-            $url = $matches[1]
-            $fileName = $matches[2]
+        $resp = Invoke-WebRequest -Uri $url -Method "POST" -Body $body -WebSession $session -Headers $headers -UseBasicParsing
+        $html = $resp.Content
+        $script:lastResponse = $html  # Store the last response
+        $trContents = [regex]::Matches($html, '(?s)<tr.*?>(.*?)</tr>') | ForEach-Object { $_.Groups[1].Value }
+        $results = @()
+        foreach ($trContent in $trContents) {
+            if ($trContent -match '<a href="(http://tlu\.dl\.delivery\.mp\.microsoft\.com[^"]+)"[^>]*>([^<]+)</a>') {
+                $url = $matches[1]
+                $fileName = $matches[2]
+            }
+            if ($trContent -match '>(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} GMT)<') {
+                $dateTime = [DateTime]::ParseExact($matches[1], "yyyy-MM-dd HH:mm:ss 'GMT'", $null)
+            }
+            if ($trContent -match '>(\d+(?:\.\d+)?)\s*MB<') {
+                $size = $matches[1] + " MB"
+            }
+            $results += [PSCustomObject]@{
+                FileName = $fileName
+                DateTime = $dateTime
+                Size     = $size
+                Url      = $url
+            }
         }
-        if ($trContent -match '>(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} GMT)<') {
-            $dateTime = [DateTime]::ParseExact($matches[1], "yyyy-MM-dd HH:mm:ss 'GMT'", $null)
+        $filteredResults = $results | Where-Object { $_.FileName -match 'SpotifyAB\.SpotifyMusic_.+x86.+\.appx' }
+        $latestFile = $filteredResults | Sort-Object -Property DateTime -Descending | Select-Object -First 1
+        
+        if (-not $latestFile) {
+            throw "No matching Spotify file found"
         }
-        if ($trContent -match '>(\d+(?:\.\d+)?)\s*MB<') {
-            $size = $matches[1] + " MB"
-        }
-        $results += [PSCustomObject]@{
-            FileName = $fileName
-            DateTime = $dateTime
-            Size     = $size
-            Url      = $url
-        }
-    }
+        
+        return $latestFile
+    } -MaxAttempts 3 -DelaySeconds 5
 
-    $filteredResults = $results | Where-Object { $_.FileName -match 'SpotifyAB\.SpotifyMusic_.+x86.+\.appx' }
-    $latestFile = $filteredResults | Sort-Object -Property DateTime -Descending | Select-Object -First 1
-    
-    if ($latestFile) {
-        Write-Log "Found: $($latestFile.FileName)"
+    if ($response) {
+        Write-Log "Found: $($response.FileName)"
+        return $response
     }
     else {
-        Write-Log "No matching Spotify file found"
+        Write-Log "Failed to find matching Spotify file after multiple attempts."
         Write-Log "Response:"
-        Write-Log $html
+        Write-Log $lastResponse
+        return $null
     }
-    return $latestFile
 }
 
 function Download-SpotifyAppx {
