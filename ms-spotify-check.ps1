@@ -102,7 +102,7 @@ function Get-LatestSpotifyVersion {
         }
         
         return $latestFile
-    } -MaxAttempts 3 -DelaySeconds 5
+    } -MaxAttempts 6 -DelaySeconds 6
 
     if ($response) {
         Write-Log "Found: $($response.FileName)"
@@ -111,7 +111,7 @@ function Get-LatestSpotifyVersion {
     else {
         Write-Log "Failed to find matching Spotify file after multiple attempts."
         Write-Log "Response:"
-        Write-Log $lastResponse
+        Write-Log $script:lastResponse
         return $null
     }
 }
