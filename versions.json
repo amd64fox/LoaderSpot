@@ -1,4 +1,18 @@
 {
+  "1.2.49.439": {
+    "fullversion": "1.2.49.439.gfae492c7",
+    "links": {
+      "win": {
+        "x86": "https://upgrade.scdn.co/upgrade/client/win32-x86/spotify_installer-1.2.49.439.gfae492c7-3225.exe",
+        "x64": "https://upgrade.scdn.co/upgrade/client/win32-x86_64/spotify_installer-1.2.49.439.gfae492c7-3243.exe",
+        "arm64": "https://upgrade.scdn.co/upgrade/client/win32-arm64/spotify_installer-1.2.49.439.gfae492c7-3215.exe"
+      },
+      "mac": {
+        "intel": "https://upgrade.scdn.co/upgrade/client/osx-x86_64/spotify-autoupdate-1.2.49.439.gfae492c7-3117.tbz",
+        "arm64": "https://upgrade.scdn.co/upgrade/client/osx-arm64/spotify-autoupdate-1.2.49.439.gfae492c7-3110.tbz"
+      }
+    }
+  },
   "1.2.48.405": {
     "fullversion": "1.2.48.405.gf2c48e6f",
     "links": {
