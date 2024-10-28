@@ -11,8 +11,8 @@ function Write-Log {
 function Invoke-WithRetry {
     param (
         [ScriptBlock]$ScriptBlock,
-        [int]$MaxAttempts = 3,
-        [int]$DelaySeconds = 5
+        [int]$MaxAttempts = 6,
+        [int]$DelaySeconds = 10
     )
     
     $attempt = 1
@@ -102,7 +102,7 @@ function Get-LatestSpotifyVersion {
         }
         
         return $latestFile
-    } -MaxAttempts 6 -DelaySeconds 6
+    } 
 
     if ($response) {
         Write-Log "Found: $($response.FileName)"
