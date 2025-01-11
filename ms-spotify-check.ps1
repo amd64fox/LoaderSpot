@@ -94,7 +94,7 @@ function Get-LatestSpotifyVersion {
                 Url      = $url
             }
         }
-        $filteredResults = $results | Where-Object { $_.FileName -match 'SpotifyAB\.SpotifyMusic_.+x86.+\.appx' }
+        $filteredResults = $results | Where-Object { $_.FileName -match 'SpotifyAB\.SpotifyMusic_.+x64.+\.appx' }
         $latestFile = $filteredResults | Sort-Object -Property DateTime -Descending | Select-Object -First 1
         
         if (-not $latestFile) {
