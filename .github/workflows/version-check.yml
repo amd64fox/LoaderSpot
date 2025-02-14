@@ -2,6 +2,10 @@ name: Version Check
 on:
   repository_dispatch:
     types: [webhook-event]
+    
+concurrency:
+  group: delayed-version-check
+  cancel-in-progress: false    
 
 jobs:
   build:
@@ -17,7 +21,8 @@ jobs:
           python-version: 3.12.2
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install aiohttp beautifulsoup4 argparse
 
-      - name: Run Python script
+      - name: Version search
         run: python ${{ github.workspace }}/upd.py -v ${{ github.event.client_payload.v }} -s "${{ github.event.client_payload.s }}" -u "${{ secrets.GOOGLE_APPS_URL }}"
