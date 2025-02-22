@@ -43,6 +43,11 @@ async def check_url(session, url, platform_name):
     return None
 
 
+def parse_version(ver_str):
+    parts = ver_str.split(".")[:4]
+    return tuple(int(x) for x in parts)
+
+
 async def pre_version(latest_urls):
     message = f'Версия {version} {"отправлена" if latest_urls else "не найдена"}'
     print(message)
@@ -84,7 +89,6 @@ async def main():
     additional_searches = 10  # Максимальное кол-во шагов для дополнительного поиска
     increment = 1000  # Размер шага
 
-    numbers = start_number
     find_url = []
 
     root_url = "https://upgrade.scdn.co/upgrade/client/"
@@ -95,6 +99,10 @@ async def main():
         "OSX": "osx-x86_64/spotify-autoupdate-{version}-{numbers}.tbz",
         "OSX-ARM64": "osx-arm64/spotify-autoupdate-{version}-{numbers}.tbz",
     }
+
+    # не ищем архитектуру WIN32 если версия >= 1.2.54.304
+    if parse_version(version) >= (1, 2, 54, 304):
+        platform_templates.pop("WIN32", None)
 
     async with aiohttp.ClientSession() as session:
         tasks = []
@@ -109,37 +117,32 @@ async def main():
                 tasks.append(check_url(session, url, platform_name))
                 numbers += 1
 
-        results = []
         for task in asyncio.as_completed(tasks):
             result = await task
             if result is not None:
                 find_url.append(result)
 
-        # Дополнительный поиск
         for i in range(additional_searches):
-            if len(get_urls(find_url)) < len(
-                platform_names
-            ):  # Если не найдены все платформы
+            latest_urls = get_urls(find_url)
+            if len(latest_urls) < len(platform_names):
                 start_number = before_enter + 1
                 before_enter += increment
                 tasks = []
                 for platform_name in platform_names:
-                    numbers = start_number
-                    while numbers <= before_enter:
-                        url = root_url + platform_templates[platform_name].format(
-                            version=version, numbers=numbers
-                        )
-                        tasks.append(check_url(session, url, platform_name))
-                        numbers += 1
+                    if platform_name not in latest_urls:
+                        numbers = start_number
+                        while numbers <= before_enter:
+                            url = root_url + platform_templates[platform_name].format(
+                                version=version, numbers=numbers
+                            )
+                            tasks.append(check_url(session, url, platform_name))
+                            numbers += 1
 
-                for task in asyncio.as_completed(tasks):
-                    result = await task
-                    if result is not None:
-                        find_url.append(result)
-                latest_urls = get_urls(find_url)
-                if len(latest_urls) == len(platform_names):
-                    await pre_version(latest_urls)
-                    return
+                if tasks:
+                    for task in asyncio.as_completed(tasks):
+                        result = await task
+                        if result is not None:
+                            find_url.append(result)
 
     if find_url:
         latest_urls = get_urls(find_url)
@@ -148,4 +151,5 @@ async def main():
         await pre_version(False)
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
