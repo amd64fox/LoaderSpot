@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Official Spotify full installer</title>
+  <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
+  <link rel="preconnect" href="https://upgrade.scdn.co" crossorigin>
+  <link rel="preload" href="https://encore.scdn.co/1.2.3/CircularSpotify-UI-Latin-OS2v3-Book.woff2" as="font"
+    type="font/woff2" crossorigin="anonymous" />
+  <link rel="preload" href="https://encore.scdn.co/1.2.3/CircularSpotify-UI-Latin-OS2v3-Bold.woff2" as="font"
+    type="font/woff2" crossorigin="anonymous" />
+
+
+  <style>
+    html {
+      overflow-y: scroll;
+      /* Всегда показывать вертикальную полосу прокрутки, для более плавного переключения вкладок таблицы */
+    }
+
+    @font-face {
+      font-family: 'Circular Spotify';
+      src: url('https://encore.scdn.co/1.2.3/CircularSpotify-UI-Latin-OS2v3-Book.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Circular Spotify';
+      src: url('https://encore.scdn.co/1.2.3/CircularSpotify-UI-Latin-OS2v3-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Circular Spotify', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: #181a1b;
+      color: #a59d92;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .nav-container {
+      background: #000000;
+      padding: 2rem 2rem;
+      margin-bottom: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+    }
+
+    .navbar {
+      width: 90%;
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #e8e6e3;
+      position: absolute;
+      left: 0;
+      pointer-events: none;
+    }
+
+    .nav-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 30px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .nav-center a {
+      color: #e8e6e3;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      font-weight: 700;
+    }
+
+    .nav-center a.active {
+      background: #1db954;
+      color: #000;
+    }
+
+    .nav-center a:hover:not(.active) {
+      color: #1db954;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #e8e6e3;
+      font-weight: 400;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      color: #ccc;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 40px auto;
+      position: relative;
+      overflow-x: auto;
+      /* Чтобы таблица прокручивалась при узком экране */
+    }
+
+    /* Стили таблицы */
+    table.version-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+      /* чтобы колонки не сжимались слишком сильно */
+      table-layout: fixed;
+      /* Фиксированная разметка таблицы */
+    }
+
+    /* Добавляем новый стиль для разделения версий */
+    table.version-table tr:has(.version-cell) {
+      border-top: 2px solid #444;
+    }
+
+    /* Для первой строки убираем верхнюю границу */
+    table.version-table tbody tr:first-child {
+      border-top: none;
+      border-top: 2px solid #444;
+    }
+
+    /* Добавляем стиль для нижней границы последней версии */
+    table.version-table tbody tr:last-child {
+      border-bottom: 2px солидный #444;
+    }
+
+    table.version-table thead th {
+
+      text-align: left;
+      padding: 8px;
+      border-bottom: 1px солидный #444;
+      font-weight: 700;
+    }
+
+    /* Задаем ширину для каждого столбца */
+    table.version-table th:nth-child(1) {
+      width: 15%;
+    }
+
+    /* Версия */
+    table.version-table th:nth-child(2) {
+      width: 10%;
+    }
+
+    /* ОС */
+    table.version-table th:nth-child(3) {
+      width: 10%;
+    }
+
+    /* Архитектура */
+    table.version-table th:nth-child(4) {
+      width: 10%;
+    }
+
+    /* Дата */
+    table.version-table th:nth-child(5) {
+      width: 10%;
+    }
+
+    /* Размер */
+    table.version-table th:nth-child(6) {
+      width: 8%;
+    }
+
+    /* Кнопка */
+
+    table.version-table tbody td {
+      padding: 7px;
+      border-bottom: 1px solid #333;
+      vertical-align: middle;
+      font-size: 14px
+    }
+
+    /* Чтобы версия визуально выделялась при наведении/копирование */
+    .version-cell {
+      font-weight: 500;
+      color: #b3b3b3;
+    }
+
+    .version-text {
+      cursor: pointer;
+      display: inline-block;
+      /* Чтобы курсор был только на тексте */
+    }
+
+    .version-text:hover {
+      color: #fff;
+    }
+
+    .short-version {
+      font-size: 1.2em;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 4px;
+      user-select: none;
+    }
+
+    .full-version {
+      font-size: 0.9em;
+      color: #777;
+      display: block;
+      user-select: none;
+    }
+
+
+    /* Кнопка скачать (иконка) */
+    .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #a59d92;
+      text-decoration: none;
+      font-weight: 500;
+      background: #ffffff08;
+      padding: 6px 10px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .download-link:hover {
+      background: #ffffff12;
+    }
+
+    .download-icon {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      transition: fill 0.2s;
+    }
+
+    .download-link:hover .download-icon {
+      fill: #1db954;
+    }
+
+    /* Тост-уведомление (скопировано в буфер) */
+    .toast-notification {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #464746;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast-notification.show {
+      opacity: 1;
+    }
+
+    .action-cell {
+      text-align: center;
+      /* Выравнивание содержимого ячейки по центру */
+    }
+
+    /* Стили для кнопок фильтрации */
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      padding: 8px;
+    }
+
+    /* Стили для ячейки с кнопками */
+    table.version-table thead td {
+      border: none;
+      padding: 0;
+    }
+
+    /* Кнопки внутри таблицы */
+    table.version-table .filter-button {
+      padding: 8px 20px;
+      border: 1px solid #1db954;
+      background: transparent;
+      color: #1db954;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    table.version-table .filter-button.active {
+      background: #1db954;
+      color: #000;
+    }
+
+    table.version-table .filter-button:hover:not(.active) {
+      background: #1db95420;
+    }
+
+    /* Добавляем плавный переход для контейнера таблицы */
+    #versions-container {
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    /* Стили для Linux-репозитория */
+    .linux-repo-wrapper {
+      background: #242628;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .repo-header {
+      display: grid;
+      grid-template-columns: 1fr 100px 150px;
+      gap: 16px;
+      padding: 12px 16px;
+      background: #2a2e2f;
+      border-bottom: 1px solid #333;
+      font-weight: 700;
+      color: #e8e6e3;
+    }
+
+    .repo-content {
+      height: 170px;
+      overflow-y: auto;
+    }
+
+    .repo-item {
+      display: grid;
+      grid-template-columns: 1fr 100px 150px;
+      gap: 16px;
+      padding: 8px 16px;
+      border-bottom: 1px solid #333;
+      transition: background 0.2s;
+      text-decoration: none;
+      color: #a59d92;
+    }
+
+    .repo-item:hover {
+      background: #2a2e2f;
+    }
+
+    .loading-indicator {
+      padding: 16px;
+      text-align: center;
+      color: #777;
+    }
+
+    .repo-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .repo-content::-webkit-scrollbar-track {
+      background: #242628;
+    }
+
+    .repo-content::-webkit-scrollbar-thumb {
+      background: #444;
+      border-radius: 4px;
+    }
+
+    .repo-content::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav-container">
+    <div class="navbar">
+      <div class="nav-brand">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" width="32" height="32" fill="#1db954">
+          <path d="M248 8C111.1 8 0 119.1 0 256s111.1 248 248 248 248-111.1 248-248S384.9 8 248 8Z" />
+          <path fill="#282828"
+            d="M406.6 231.1c-5.2 0-8.4-1.3-12.9-3.9-71.2-42.5-198.5-52.7-280.9-29.7-3.6 1-8.1 2.6-12.9 2.6-13.2 0-23.3-10.3-23.3-23.6 0-13.6 8.4-21.3 17.4-23.9 35.2-10.3 74.6-15.2 117.5-15.2 73 0 149.5 15.2 205.4 47.8 7.8 4.5 12.9 10.7 12.9 22.6 0 13.6-11 23.3-23.2 23.3zm-31 76.2c-5.2 0-8.7-2.3-12.3-4.2-62.5-37-155.7-51.9-238.6-29.4-4.8 1.3-7.4 2.6-11.9 2.6-10.7 0-19.4-8.7-19.4-19.4s5.2-17.8 15.5-20.7c27.8-7.8 56.2-13.6 97.8-13.6 64.9 0 127.6 16.1 177 45.5 8.1 4.8 11.3 11 11.3 19.7-.1 10.8-8.5 19.5-19.4 19.5zm-26.9 65.6c-4.2 0-6.8-1.3-10.7-3.6-62.4-37.6-135-39.2-206.7-24.5-3.9 1-9 2.6-11.9 2.6-9.7 0-15.8-7.7-15.8-15.8 0-10.3 6.1-15.2 13.6-16.8 81.9-18.1 165.6-16.5 237 26.2 6.1 3.9 9.7 7.4 9.7 16.5s-7.1 15.4-15.2 15.2z" />
+        </svg>
+        <span>Spotify</span>
+      </div>
+      <ul class="nav-center">
+        <li><a href="index.html" class="active" style="pointer-events: none; cursor: default;">Versions</a></li>
+        <li><a href="help.html" style="pointer-events: none; cursor: default;">Help</a></li>
+        <li><a href="links.html" style="pointer-events: none; cursor: default;">Links</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Заголовок -->
+  <header>
+    <h1>Official Spotify full installer</h1>
+    <p>Site in testing mode...</p>
+  </header>
+
+  <!-- Контейнер с таблицей -->
+  <div class="container">
+    <table class="version-table" id="versionsTable">
+      <thead>
+        <!-- Обновленный ряд фильтрации: добавлена кнопка Linux -->
+        <tr>
+          <td colspan="5">
+            <div class="filter-buttons">
+              <button class="filter-button active" data-os="win">Windows</button>
+              <button class="filter-button" data-os="mac">Mac</button>
+              <button class="filter-button" data-os="linux">Linux</button>
+            </div>
+          </td>
+        </tr>
+        <tr class="table-headers">
+          <th>Version</th>
+          <th>Architecture</th>
+          <th>Data</th>
+          <th>Size</th>
+          <th> </th>
+        </tr>
+      </thead>
+      <tbody id="versions-container">
+        <tr>
+          <td colspan="5">Loading data...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Тост-уведомление (копирование) -->
+  <div class="toast-notification" id="toast">Copied to clipboard</div>
+
+  <script>
+    // Иконка "Скачать"
+    const downloadIcon = `
+      <svg class="download-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M12 15.575c-.183 0-.36-.073-.49-.203l-4.095-4.095a.694.694 0 01.981-.981L12 13.901l3.604-3.604a.694.694 0 01.981.98l-4.095 4.095a.692.692 0 01-.49.203z"/>
+        <path d="M12 15.575a.694.694 0 01-.694-.694V3.694a.694.694 0 011.388 0v11.187c0 .383-.31.694-.694.694z"/>
+        <path d="M16.306 20.306H7.694a4.167 4.167 0 01-4.162-4.163v-2.777a.694.694 0 011.388 0v2.777a2.778 2.778 0 002.774 2.775h8.612a2.778 2.778 0 002.775-2.775v-2.777a.694.694 0 011.387 0v2.777a4.167 4.167 0 01-4.162 4.163z"/>
+      </svg>
+    `;
+
+    // Функция отображения тоста
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // Функция fallback для копирования текста
+    function fallbackCopyTextToClipboard(text) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.top = '0';
+      textArea.style.left = '0';
+      textArea.style.width = '2em';
+      textArea.style.height = '2em';
+      textArea.style.padding = '0';
+      textArea.style.border = 'none';
+      textArea.style.outline = 'none';
+      textArea.style.boxShadow = 'none';
+      textArea.style.background = 'transparent';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        document.execCommand('copy');
+        showToast('Copied to clipboard');
+      } catch (err) {
+        showToast('Error while copying');
+        console.error('Error while copying:', err);
+      }
+      document.body.removeChild(textArea);
+    }
+
+    // Добавляем глобальный кэш для результатов HEAD-запросов
+    const headCache = new Map();
+
+    // Обновленная функция updateLinkInfo с использованием кэша
+    async function updateLinkInfo(dateCell, sizeCell, url) {
+      if (headCache.has(url)) {
+        const cached = headCache.get(url);
+        dateCell.textContent = cached.date;
+        sizeCell.textContent = cached.size;
+        return;
+      }
+      try {
+        const response = await fetch(url, { method: 'HEAD' });
+        const lastModified = response.headers.get('Last-Modified');
+        const contentLength = response.headers.get('Content-Length');
+        let formattedDate = '—';
+        let sizeMb = '—';
+        if (lastModified) {
+          const date = new Date(lastModified);
+          formattedDate =
+            String(date.getDate()).padStart(2, '0') + '.' +
+            String(date.getMonth() + 1).padStart(2, '0') + '.' +
+            date.getFullYear();
+        }
+        if (contentLength) {
+          sizeMb = (parseInt(contentLength, 10) / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+        // Сохраняем результат в кэше
+        headCache.set(url, { date: formattedDate, size: sizeMb });
+        dateCell.textContent = formattedDate;
+        sizeCell.textContent = sizeMb;
+      } catch (error) {
+        console.error('Error getting headers', error);
+        dateCell.textContent = '—';
+        sizeCell.textContent = '—';
+        headCache.set(url, { date: '—', size: '—' });
+      }
+    }
+
+    // Создаем строки таблицы для одной версии
+    function createVersionRows(versionKey, data) {
+      const shortVersion = versionKey;
+      const archCombos = [];
+      let totalRowsForVersion = 0;
+
+      // Фильтруем только по текущей ОС
+      if (data.links[currentOS]) {
+        for (const arch of Object.keys(data.links[currentOS])) {
+          const link = data.links[currentOS][arch];
+          if (link) {
+            archCombos.push({ arch, link });
+            totalRowsForVersion++;
+          }
+        }
+      }
+
+      if (totalRowsForVersion === 0) return [];
+
+      const rows = [];
+      let isFirstVersionRow = true;
+
+      archCombos.forEach((combo) => {
+        const row = document.createElement('tr');
+
+        if (isFirstVersionRow) {
+          const versionCell = document.createElement('td');
+          versionCell.className = 'version-cell';
+          versionCell.rowSpan = totalRowsForVersion;
+
+          const versionText = document.createElement('div');
+          versionText.className = 'version-text';
+          versionText.innerHTML = `<span class="short-version">${shortVersion}</span><span class="full-version">${data.fullversion}</span>`;
+
+          versionText.addEventListener('click', async () => {
+            try {
+              if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(data.fullversion);
+                showToast('Copied to clipboard');
+              } else {
+                fallbackCopyTextToClipboard(data.fullversion);
+              }
+            } catch (err) {
+              console.error('Error while copying:', err);
+              fallbackCopyTextToClipboard(data.fullversion);
+            }
+          });
+
+          versionCell.appendChild(versionText);
+          row.appendChild(versionCell);
+          isFirstVersionRow = false;
+        }
+
+        // Архитектура
+        const archCell = document.createElement('td');
+        archCell.textContent = combo.arch;
+        row.appendChild(archCell);
+
+        // Дата
+        const dateCell = document.createElement('td');
+        dateCell.textContent = '—';
+        row.appendChild(dateCell);
+
+        // Размер
+        const sizeCell = document.createElement('td');
+        sizeCell.textContent = '—';
+        row.appendChild(sizeCell);
+
+        // Кнопка скачать
+        const actionCell = document.createElement('td');
+        actionCell.className = 'action-cell';
+        const downloadLink = document.createElement('a');
+        downloadLink.className = 'download-link';
+        downloadLink.href = combo.link;
+        downloadLink.target = '_blank';
+        downloadLink.innerHTML = downloadIcon;
+        actionCell.appendChild(downloadLink);
+        row.appendChild(actionCell);
+
+        // Обновляем инфу о дате и размере
+        updateLinkInfo(dateCell, sizeCell, combo.link);
+
+        rows.push(row);
+      });
+
+      return rows;
+    }
+
+    // Переменные для "ленивой" подгрузки
+    let allVersions = [];
+    const ITEMS_PER_BATCH = 5; // по 5 версий за раз
+    let currentIndex = 0;
+    const container = document.getElementById('versions-container');
+
+    // Функция подгрузки очередной порции версий
+    function loadMoreRows() {
+      const endIndex = Math.min(currentIndex + ITEMS_PER_BATCH, allVersions.length);
+      for (let i = currentIndex; i < endIndex; i++) {
+        const [versionKey, versionData] = allVersions[i];
+        const versionRows = createVersionRows(versionKey, versionData);
+        versionRows.forEach(r => container.appendChild(r));
+      }
+      currentIndex = endIndex;
+      if (currentIndex < allVersions.length) {
+        container.appendChild(sentinel);
+      }
+    }
+
+    // Невидимый "сторож" для Intersection Observer
+    const sentinel = document.createElement('tr');
+    sentinel.style.height = '1px';
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && currentIndex < allVersions.length) {
+          observer.unobserve(sentinel);
+          loadMoreRows();
+          if (currentIndex < allVersions.length) {
+            observer.observe(sentinel);
+          }
+        }
+      });
+    }, { root: null, rootMargin: '100px', threshold: 0 });
+
+    // Получаем JSON и строим таблицу
+    fetch('https://raw.githubusercontent.com/amd64fox/LoaderSpot/refs/heads/main/versions.json')
+      .then(response => response.json())
+      .then(data => {
+        container.innerHTML = ''; // Очищаем "Загрузка данных..."
+        allVersions = Object.entries(data);
+        loadMoreRows();
+        if (currentIndex < allVersions.length) {
+          observer.observe(sentinel);
+        }
+      })
+      .catch(err => {
+        console.error('Ошибка загрузки данных:', err);
+        container.innerHTML = '<tr><td colspan="6">Не удалось загрузить данные версий.</td></tr>';
+      });
+
+    // Добавляем переменную для отслеживания текущей ОС
+    let currentOS = 'win';
+
+    // Получаем ссылки на таблицу и Linux-контейнер
+    const versionsTable = document.getElementById('versionsTable');
+
+    // Обновляем обработчик кликов по кнопкам фильтрации
+    document.querySelectorAll('.filter-button').forEach(button => {
+      button.addEventListener('click', () => {
+        // Удаляем активный класс со всех кнопок
+        document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        currentOS = button.dataset.os;
+
+        container.style.opacity = "0";
+        setTimeout(() => {
+          if (currentOS === 'linux') {
+            loadLinuxPackages();
+          } else {
+            container.innerHTML = "";
+            currentIndex = 0;
+            loadMoreRows();
+            if (currentIndex < allVersions.length) {
+              observer.observe(sentinel);
+            }
+          }
+          container.style.opacity = "1";
+        }, 300);
+      });
+    });
+
+
+    // Обновленная функция загрузки Linux-пакетов с реальными ссылками и ручными данными
+    async function loadLinuxPackages() {
+      container.innerHTML = '<tr><td colspan="5">Загрузка данных...</td></tr>';
+
+      const linuxPackages = [
+        {
+          version: {
+            short: '1.2.56.502',
+            full: '1.2.56.502.ga68d2d4f'
+          },
+          architectures: [
+            {
+              arch: 'amd64',
+              link: 'http://repository.spotify.com/pool/non-free/s/spotify-client/spotify-client_1.2.56.502.ga68d2d4f_amd64.deb',
+              date: '10.02.2025',
+              size: '136.36 MB'
+            }
+          ]
+        },
+        {
+          version: {
+            short: '1.2.53.440',
+            full: '1.2.53.440.g7b2f582a'
+          },
+          architectures: [
+            {
+              arch: 'amd64',
+              link: 'http://repository.spotify.com/pool/non-free/s/spotify-client/spotify-client_1.2.53.440.g7b2f582a_amd64.deb',
+              date: '14.01.2025',
+              size: '136.86 MB'
+            }
+          ]
+        }
+      ];
+
+      try {
+        container.innerHTML = '';
+        linuxPackages.forEach(version => {
+          const versionCell = document.createElement('td');
+          versionCell.className = 'version-cell';
+          versionCell.rowSpan = version.architectures.length;
+
+          const versionText = document.createElement('div');
+          versionText.className = 'version-text';
+          versionText.innerHTML = `
+            <span class="short-version">${version.version.short}</span>
+            <span class="full-version">${version.version.full}</span>
+          `;
+          versionText.addEventListener('click', () => {
+            navigator.clipboard.writeText(version.version.full)
+              .then(() => showToast('Скопировано в буфер обмена'))
+              .catch(() => fallbackCopyTextToClipboard(version.version.full));
+          });
+          versionCell.appendChild(versionText);
+
+          version.architectures.forEach((arch, index) => {
+            const row = document.createElement('tr');
+            if (index === 0) {
+              row.appendChild(versionCell);
+            }
+            const archCell = document.createElement('td');
+            archCell.textContent = arch.arch;
+            row.appendChild(archCell);
+
+            const dateCell = document.createElement('td');
+            // Записываем вручную полученную дату
+            dateCell.textContent = arch.date;
+            row.appendChild(dateCell);
+
+            const sizeCell = document.createElement('td');
+            // Записываем вручную указанный размер
+            sizeCell.textContent = arch.size;
+            row.appendChild(sizeCell);
+
+            const actionCell = document.createElement('td');
+            actionCell.className = 'action-cell';
+            const downloadLink = document.createElement('a');
+            downloadLink.className = 'download-link';
+            downloadLink.href = arch.link;
+            downloadLink.target = '_blank';
+            downloadLink.innerHTML = downloadIcon;
+            actionCell.appendChild(downloadLink);
+            row.appendChild(actionCell);
+
+            container.appendChild(row);
+            // Не вызываем updateLinkInfo, т.к. данные заданы вручную
+          });
+        });
+      } catch (error) {
+        console.error('Ошибка загрузки Linux пакетов:', error);
+        container.innerHTML = '<tr><td colspan="5">Ошибка загрузки списка пакетов</td></tr>';
+      }
+    }
+  </script>
+</body>
+
+</html>
