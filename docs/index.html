@@ -441,7 +441,7 @@
         <tr class="table-headers">
           <th>Version</th>
           <th>Architecture</th>
-          <th>Date</th>
+          <th>Data</th>
           <th>Size</th>
           <th> </th>
         </tr>
@@ -810,8 +810,26 @@
         container.innerHTML = '<tr><td colspan="5">Ошибка загрузки списка пакетов</td></tr>';
       }
     }
+
+    // логика для принудительного выбора ОС через URL параметры:
+    document.addEventListener('DOMContentLoaded', () => {
+      const query = window.location.search;
+      let osParam = "";
+      if (query) {
+        const params = query.slice(1).split('&').filter(p => p.trim());
+        if (params.length) {
+          osParam = params[0].toLowerCase();
+        }
+      }
+      if (osParam && ['win', 'mac', 'linux'].includes(osParam)) {
+        const button = document.querySelector(`.filter-button[data-os="${osParam}"]`);
+        if (button) {
+          button.click();
+        }
+      }
+    });
   </script>
-  <script data-goatcounter="https://loaderspot.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script data-goatcounter="https://loaderspot.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 
 </html>
