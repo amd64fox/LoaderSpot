@@ -311,15 +311,18 @@
 
     /* Кнопки внутри таблицы */
     table.version-table .filter-button {
-      padding: 8px 20px;
-      border: 1px solid #1db954;
+      padding: 6px 20px;
+      /* Изменено с 8px на 6px */
+      border: 1px solid #474747;
       background: transparent;
-      color: #1db954;
+      color: #a6a7a7;
       border-radius: 20px;
       cursor: pointer;
       font-family: inherit;
       font-weight: 700;
       transition: all 0.3s ease;
+      height: 34px;
+      /* Увеличено с 32px до 34px */
     }
 
     table.version-table .filter-button.active {
@@ -331,7 +334,7 @@
       background: #1db95420;
     }
 
-    /* Добавляем плавный переход для контейнера таблицы */
+    /* Плавный переход для контейнера таблицы */
     #versions-container {
       transition: opacity 0.3s ease-in-out;
     }
@@ -396,6 +399,53 @@
     .repo-content::-webkit-scrollbar-thumb:hover {
       background: #555;
     }
+
+    /* Стили для контейнера поиска */
+    .search-container {
+      padding: 4px 12px;
+      /* Изменено с 5.4px на 4px */
+      border-radius: 20px;
+      border: 1px solid #474747;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 34px;
+      /* Увеличено с 32px до 34px */
+    }
+
+    /* Стили для поля поиска */
+    .search-container input[type="search"] {
+      border: none;
+      background: transparent;
+      outline: none;
+      color: #b3b3b3 !important;
+      width: 180px;
+      font-size: 14px;
+      padding: 4px 0;
+    }
+
+    /* Крестик очистки для WebKit */
+    .search-container input[type="search"]::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+      height: 16px;
+      width: 16px;
+      margin-top: 4px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23e8e6e3' viewBox='0 0 20 20'%3E%3Cpath d='M14.348 5.652a1 1 0 10-1.414-1.414L10 7.172 7.066 4.238a1 1 0 10-1.414 1.414L8.586 8.586l-2.934 2.934a1 1 0 101.414 1.414L10 10l2.934 2.934a1 1 0 001.414-1.414L11.414 8.586l2.934-2.934z'/%3E%3C/svg%3E") no-repeat center;
+      cursor: pointer;
+    }
+
+    /* Стиль для иконки поиска */
+    .search-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: #e8e6e3;
+      display: block;
+    }
+
+    /* Правило для подсветки найденного текста */
+    mark {
+      background-color: rgba(255, 255, 0, 0.4);
+    }
   </style>
 </head>
 
@@ -428,13 +478,23 @@
   <div class="container">
     <table class="version-table" id="versionsTable">
       <thead>
-        <!-- Обновленный ряд фильтрации: добавлена кнопка Linux -->
+        <!-- Обновленный ряд фильтрации: добавлена панель поиска -->
         <tr>
           <td colspan="5">
-            <div class="filter-buttons">
+            <div class="filter-buttons" style="display: inline-flex; align-items: center; gap: 10px;">
               <button class="filter-button active" data-os="win">Windows</button>
               <button class="filter-button" data-os="mac">Mac</button>
               <button class="filter-button" data-os="linux">Linux</button>
+              <!--блок поиска -->
+              <div class="search-container">
+                <span class="search-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <path
+                      d="M11.742 10.344a6.5 6.5 0 10-1.398 1.398h-.001l3.85 3.85a1 1 0 001.414-1.414l-3.85-3.85zm-5.242 0a4.5 4.5 0 110-9 4.5 4.5 0 010 9z" />
+                  </svg>
+                </span>
+                <input type="search" id="versionSearch" placeholder="Search">
+              </div>
             </div>
           </td>
         </tr>
@@ -506,10 +566,10 @@
       document.body.removeChild(textArea);
     }
 
-    // Добавляем глобальный кэш для результатов HEAD-запросов
+    // Глобальный кэш для результатов HEAD-запросов
     const headCache = new Map();
 
-    // Обновленная функция updateLinkInfo с использованием кэша
+    // Функция updateLinkInfo с использованием кэша
     async function updateLinkInfo(dateCell, sizeCell, url) {
       if (headCache.has(url)) {
         const cached = headCache.get(url);
@@ -545,8 +605,14 @@
       }
     }
 
+    // Вспомогательная функция для подсветки найденного текста
+    function highlight(text, term) {
+      const regex = new RegExp(`(${term})`, 'gi');
+      return text.replace(regex, '<mark>$1</mark>');
+    }
+
     // Создаем строки таблицы для одной версии
-    function createVersionRows(versionKey, data) {
+    function createVersionRows(versionKey, data, searchTerm = '') {
       const shortVersion = versionKey;
       const archCombos = [];
       let totalRowsForVersion = 0;
@@ -575,9 +641,12 @@
           versionCell.className = 'version-cell';
           versionCell.rowSpan = totalRowsForVersion;
 
+          // Используем подсветку, если searchTerm непустой
+          const displayedShort = searchTerm ? highlight(shortVersion, searchTerm) : shortVersion;
+          const displayedFull = searchTerm ? highlight(data.fullversion, searchTerm) : data.fullversion;
           const versionText = document.createElement('div');
           versionText.className = 'version-text';
-          versionText.innerHTML = `<span class="short-version">${shortVersion}</span><span class="full-version">${data.fullversion}</span>`;
+          versionText.innerHTML = `<span class="short-version">${displayedShort}</span><span class="full-version">${displayedFull}</span>`;
 
           versionText.addEventListener('click', async () => {
             try {
@@ -681,24 +750,28 @@
         }
       })
       .catch(err => {
-        console.error('Ошибка загрузки данных:', err);
-        container.innerHTML = '<tr><td colspan="6">Не удалось загрузить данные версий.</td></tr>';
+        console.error('Error loading data:', err);
+        container.innerHTML = '<tr><td colspan="6">Failed to load version data.</td></tr>';
       });
 
-    // Добавляем переменную для отслеживания текущей ОС
+    // Переменная для отслеживания текущей ОС
     let currentOS = 'win';
 
     // Получаем ссылки на таблицу и Linux-контейнер
     const versionsTable = document.getElementById('versionsTable');
 
-    // Обновляем обработчик кликов по кнопкам фильтрации
+    // Логика обработки кликов по кнопкам фильтрации
     document.querySelectorAll('.filter-button').forEach(button => {
       button.addEventListener('click', () => {
-        // Удаляем активный класс со всех кнопок
         document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
         currentOS = button.dataset.os;
-
+        // При смене ОС очищаем поле поиска
+        const versionSearch = document.getElementById('versionSearch');
+        versionSearch.value = "";
+        // Скрываем блок поиска, если выбрана Linux, иначе показываем
+        const searchContainer = document.querySelector('.search-container');
+        searchContainer.style.display = currentOS === 'linux' ? 'none' : 'inline-flex';
         container.style.opacity = "0";
         setTimeout(() => {
           if (currentOS === 'linux') {
@@ -716,8 +789,53 @@
       });
     });
 
+    // Обработчик для поиска по версиям
+    const versionSearch = document.getElementById('versionSearch');
+    versionSearch.addEventListener('input', (e) => {
+      const term = e.target.value.trim().toLowerCase();
 
-    // Обновленная функция загрузки Linux-пакетов с реальными ссылками и ручными данными
+      container.style.opacity = "0";
+
+      setTimeout(() => {
+        // Если поле пустое, возвращаем исходное поведение
+        if (term === "") {
+          if (currentOS === 'linux') {
+            loadLinuxPackages();
+          } else {
+            container.innerHTML = "";
+            currentIndex = 0;
+            loadMoreRows();
+            if (currentIndex < allVersions.length) {
+              observer.observe(sentinel);
+            }
+          }
+          container.style.opacity = "1";
+          return;
+        }
+
+        // Отключаем ленивую подгрузку при поиске
+        observer.unobserve(sentinel);
+        container.innerHTML = "";
+
+        // Фильтруем все версии по короткой или полной версии
+        const filtered = allVersions.filter(([versionKey, data]) => {
+          return versionKey.toLowerCase().includes(term) || data.fullversion.toLowerCase().includes(term);
+        });
+
+        if (filtered.length > 0) {
+          filtered.forEach(([versionKey, data]) => {
+            const rows = createVersionRows(versionKey, data, term);
+            rows.forEach(row => container.appendChild(row));
+          });
+        } else {
+          container.innerHTML = '<tr><td colspan="5">No results</td></tr>';
+        }
+
+        container.style.opacity = "1";
+      }, 300);
+    });
+
+    // Локальные версии для Linux
     async function loadLinuxPackages() {
       container.innerHTML = '<tr><td colspan="5">Загрузка данных...</td></tr>';
 
@@ -811,7 +929,7 @@
       }
     }
 
-    // логика для принудительного выбора ОС через URL параметры:
+    // Логика для принудительного выбора ОС через URL параметры:
     document.addEventListener('DOMContentLoaded', () => {
       const query = window.location.search;
       let osParam = "";
@@ -829,7 +947,7 @@
       }
     });
   </script>
-<script data-goatcounter="https://loaderspot.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <script data-goatcounter="https://loaderspot.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 
 </html>
