@@ -4,9 +4,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Official Spotify full installer</title>
+  <title>Official Spotify full installers</title>
   <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
   <link rel="preconnect" href="https://upgrade.scdn.co" crossorigin>
+  <link rel="preconnect" href="https://broad-pine-bbc0.amd64fox1.workers.dev" crossorigin>
   <link rel="preload" href="https://encore.scdn.co/1.2.3/CircularSpotify-UI-Latin-OS2v3-Book.woff2" as="font"
     type="font/woff2" crossorigin="anonymous" />
   <link rel="preload" href="https://encore.scdn.co/1.2.3/CircularSpotify-UI-Latin-OS2v3-Bold.woff2" as="font"
@@ -15,8 +16,12 @@
 
   <style>
     html {
-      overflow-y: scroll;
       /* Всегда показывать вертикальную полосу прокрутки, для более плавного переключения вкладок таблицы */
+      overflow-y: scroll;
+
+      /* Стили для адаптации scrollbar под тёмную тему для Firefox */
+      scrollbar-color: #666 #2a2a2a;
+      scrollbar-width: auto;
     }
 
     @font-face {
@@ -158,48 +163,16 @@
 
     /* Добавляем стиль для нижней границы последней версии */
     table.version-table tbody tr:last-child {
-      border-bottom: 2px солидный #444;
+      border-bottom: 2px solid #444;
     }
 
     table.version-table thead th {
 
       text-align: left;
       padding: 8px;
-      border-bottom: 1px солидный #444;
+      border-bottom: 1px solid #444;
       font-weight: 700;
     }
-
-    /* Задаем ширину для каждого столбца */
-    table.version-table th:nth-child(1) {
-      width: 15%;
-    }
-
-    /* Версия */
-    table.version-table th:nth-child(2) {
-      width: 10%;
-    }
-
-    /* ОС */
-    table.version-table th:nth-child(3) {
-      width: 10%;
-    }
-
-    /* Архитектура */
-    table.version-table th:nth-child(4) {
-      width: 10%;
-    }
-
-    /* Дата */
-    table.version-table th:nth-child(5) {
-      width: 10%;
-    }
-
-    /* Размер */
-    table.version-table th:nth-child(6) {
-      width: 8%;
-    }
-
-    /* Кнопка */
 
     table.version-table tbody td {
       padding: 7px;
@@ -218,6 +191,8 @@
       cursor: pointer;
       display: inline-block;
       /* Чтобы курсор был только на тексте */
+      position: relative;
+      /* для корректного позиционирования tooltip */
     }
 
     .version-text:hover {
@@ -252,6 +227,10 @@
       padding: 6px 10px;
       border-radius: 4px;
       transition: background 0.2s;
+      position: relative;
+      /* для корректного позиционирования tooltip */
+      cursor: pointer;
+      /* добавлено для отображения указателя при наведении */
     }
 
     .download-link:hover {
@@ -263,6 +242,8 @@
       height: 16px;
       fill: currentColor;
       transition: fill 0.2s;
+      position: relative;
+      /* для корректного позиционирования tooltip */
     }
 
     .download-link:hover .download-icon {
@@ -276,7 +257,7 @@
       left: 50%;
       transform: translateX(-50%);
       background: #464746;
-      color: white;
+      color: #b3b3b3;
       padding: 12px 24px;
       border-radius: 8px;
       font-size: 0.9rem;
@@ -312,7 +293,6 @@
     /* Кнопки внутри таблицы */
     table.version-table .filter-button {
       padding: 6px 20px;
-      /* Изменено с 8px на 6px */
       border: 1px solid #474747;
       background: transparent;
       color: #a6a7a7;
@@ -322,16 +302,17 @@
       font-weight: 700;
       transition: all 0.3s ease;
       height: 34px;
-      /* Увеличено с 32px до 34px */
     }
 
     table.version-table .filter-button.active {
       background: #1db954;
       color: #000;
+      pointer-events: none;
+      /* блокируем клики на активной кнопке */
     }
 
     table.version-table .filter-button:hover:not(.active) {
-      background: #1db95420;
+      background: #d6d6d62a;
     }
 
     /* Плавный переход для контейнера таблицы */
@@ -403,14 +384,13 @@
     /* Стили для контейнера поиска */
     .search-container {
       padding: 4px 12px;
-      /* Изменено с 5.4px на 4px */
+
       border-radius: 20px;
       border: 1px solid #474747;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      height: 34px;
-      /* Увеличено с 32px до 34px */
+      height: 34px;/
     }
 
     /* Стили для поля поиска */
@@ -446,6 +426,116 @@
     mark {
       background-color: rgba(255, 255, 0, 0.4);
     }
+
+    /* Данные столбца Downloads	по центру */
+    table.version-table td:nth-child(5) {
+      width: 10%;
+      text-align: center;
+    }
+
+    .download-text {
+      display: inline-block;
+      transform: translateX(-1px);
+      /* смещает содержимое влево, не влияя на соседний столбец */
+    }
+
+    /* Стиль счетчика скачиваний */
+    .download-counter {
+      position: relative;
+      color: #a7a6a6b0;
+      padding: 2px 6px;
+      border-radius: 12px;
+      font-size: 0.75em;
+      font-weight: bold;
+      transition: transform 0.2s ease;
+      margin-left: 9px;
+      cursor: default;
+      white-space: nowrap;
+      /* чтобы все помещалось в одну строку */
+    }
+
+    .download-counter:hover {
+      transform: scale(1.1);
+    }
+
+    /* Стиль для контейнера скачивания: элементы расположены в ряд */
+    .download-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Стили для адаптации scrollbar под тёмную тему */
+    ::-webkit-scrollbar {
+      background-color: #2a2a2a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #666;
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: #3a3a3a;
+    }
+
+    /* Стили для кнопок фильтра архитектур */
+    .arch-filter-buttons {
+      display: inline-flex;
+      gap: 10px;
+      padding: 8px;
+      min-height: 50px;
+      /* Добавляем минимальную высоту */
+      transition: opacity 0.3s ease;
+      /* Плавное скрытие/появление */
+      opacity: 1;
+      height: auto;
+      overflow: hidden;
+    }
+
+    /* Класс для скрытия фильтров без влияния на layout */
+    .arch-filter-buttons.hidden {
+      opacity: 0;
+      pointer-events: none;
+      /* Блокируем клики на скрытых элементах */
+    }
+
+    .arch-filter-button {
+      padding: 6px 12px;
+      border: 1px solid #474747;
+      background: transparent;
+      color: #a6a7a7;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    .arch-filter-button.active {
+      background: #1db954;
+      color: #000;
+    }
+
+    .arch-filter-button:hover:not(.active) {
+      background: #d6d6d62a;
+    }
+
+
+    /* Добавляем стиль для строки с фильтрами архитектур */
+    tr.arch-filters-row {
+      height: 50px;
+      /* Фиксированная высота для строки с фильтрами архитектур */
+      transition: height 0.3s ease;
+      /* Плавное изменение высоты */
+    }
+
+    /* Стиль для строки с фильтрами OS и поиском */
+    tr.os-filters-row {
+      position: relative;
+      /* Чтобы row не прыгала при исчезновении arch-фильтров */
+      z-index: 2;
+      /* Строка с фильтрами OS должна быть выше */
+    }
   </style>
 </head>
 
@@ -468,18 +558,32 @@
     </div>
   </nav>
 
-  <!-- Заголовок -->
   <header>
-    <h1>Official Spotify full installer</h1>
+    <h1>Official Spotify full installers</h1>
     <p>Site in testing mode...</p>
   </header>
 
   <!-- Контейнер с таблицей -->
   <div class="container">
     <table class="version-table" id="versionsTable">
+      <!-- Регулировки ширины столбцов -->
+      <colgroup>
+        <col style="width:15%"><!-- Version -->
+        <col style="width:12%"><!-- Architecture -->
+        <col style="width:12%"><!-- Date -->
+        <col style="width:12%"><!-- Size -->
+        <col style="width:10%"><!-- Кнопка -->
+      </colgroup>
       <thead>
-        <!-- Обновленный ряд фильтрации: добавлена панель поиска -->
-        <tr>
+        <!-- ряд фильтрации: разделяем на два ряда -->
+        <tr class="arch-filters-row">
+          <td colspan="5">
+            <!-- Фильтры архитектур над кнопками ОС -->
+            <div id="arch-filters" class="arch-filter-buttons">
+            </div>
+          </td>
+        </tr>
+        <tr class="os-filters-row">
           <td colspan="5">
             <div class="filter-buttons" style="display: inline-flex; align-items: center; gap: 10px;">
               <button class="filter-button active" data-os="win">Windows</button>
@@ -488,7 +592,7 @@
               <!--блок поиска -->
               <div class="search-container">
                 <span class="search-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                  <svg xmlns="hKV Namespacettp://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
                     <path
                       d="M11.742 10.344a6.5 6.5 0 10-1.398 1.398h-.001l3.85 3.85a1 1 0 001.414-1.414l-3.85-3.85zm-5.242 0a4.5 4.5 0 110-9 4.5 4.5 0 010 9z" />
                   </svg>
@@ -518,7 +622,6 @@
   <div class="toast-notification" id="toast">Copied to clipboard</div>
 
   <script>
-    // Иконка "Скачать"
     const downloadIcon = `
       <svg class="download-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <path d="M12 15.575c-.183 0-.36-.073-.49-.203l-4.095-4.095a.694.694 0 01.981-.981L12 13.901l3.604-3.604a.694.694 0 01.981.98l-4.095 4.095a.692.692 0 01-.49.203z"/>
@@ -569,8 +672,52 @@
     // Глобальный кэш для результатов HEAD-запросов
     const headCache = new Map();
 
-    // Функция updateLinkInfo с использованием кэша
-    async function updateLinkInfo(dateCell, sizeCell, url) {
+    // Флаг для отслеживания необходимости отложить HEAD-запросы
+    let headRequestsStarted = false;
+
+    // Таймер для начала HEAD-запросов даже если Worker не ответил
+    let headRequestsTimer = null;
+
+    // Очередь HEAD-запросов
+    const pendingHeadRequests = [];
+
+    // Функция для выполнения отложенных HEAD-запросов
+    function processPendingHeadRequests() {
+      if (headRequestsStarted) return; // Если запросы уже запущены, не запускаем снова
+
+      headRequestsStarted = true;
+      // Отменяем таймер, если он был установлен
+      if (headRequestsTimer) {
+        clearTimeout(headRequestsTimer);
+        headRequestsTimer = null;
+      }
+
+      // Выполняем все HEAD-запросы из очереди
+      for (const request of pendingHeadRequests) {
+        executeHeadRequest(request.dateCell, request.sizeCell, request.url);
+      }
+      pendingHeadRequests.length = 0; // Очищаем очередь
+    }
+
+    // Функция updateLinkInfo с использованием очереди
+    function updateLinkInfo(dateCell, sizeCell, url) {
+      // Добавляем запрос в очередь
+      pendingHeadRequests.push({ dateCell, sizeCell, url });
+
+      // Если запросы уже запущены, выполняем немедленно
+      if (headRequestsStarted) {
+        executeHeadRequest(dateCell, sizeCell, url);
+        // И удаляем из очереди
+        const index = pendingHeadRequests.findIndex(req =>
+          req.dateCell === dateCell && req.sizeCell === sizeCell && req.url === url);
+        if (index > -1) {
+          pendingHeadRequests.splice(index, 1);
+        }
+      }
+    }
+
+    // Функция для выполнения HEAD-запроса
+    async function executeHeadRequest(dateCell, sizeCell, url) {
       if (headCache.has(url)) {
         const cached = headCache.get(url);
         dateCell.textContent = cached.date;
@@ -605,10 +752,151 @@
       }
     }
 
-    // Вспомогательная функция для подсветки найденного текста
+    // Глобальный кэш для всех счетчиков скачиваний, полученных из Worker
+    let allDownloadCounters = {};
+    // Флаг для отслеживания загрузки счетчиков
+    let countersLoaded = false;
+    // Хранилище для ожидающих элементов UI, которые нужно обновить после загрузки счетчиков
+    const pendingCounterElements = new Map();
+
+    // Функция для получения всех счетчиков одним запросом
+    async function loadAllDownloadCounters() {
+      try {
+        const workerUrl = 'https://broad-pine-bbc0.amd64fox1.workers.dev/?all=true';
+        // Таймаут для запроса к Worker - 3 секунды
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+        const response = await fetch(workerUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        allDownloadCounters = await response.json();
+        countersLoaded = true;
+
+        // Обновляем все ожидающие элементы UI
+        pendingCounterElements.forEach((countElement, fileUrl) => {
+          const count = allDownloadCounters[fileUrl] || "0";
+          countElement.innerHTML = count === "0" ? "" : `<span class="download-counter">${count} downloads</span>`;
+        });
+        pendingCounterElements.clear();
+
+        // Разрешаем начать HEAD-запросы после получения счетчиков
+        processPendingHeadRequests();
+      } catch (err) {
+        console.error('Error loading all download counters:', err);
+        countersLoaded = true; // помечаем как загруженные, чтобы избежать повторных запросов
+
+        // Запускаем HEAD-запросы даже при ошибке загрузки счетчиков
+        processPendingHeadRequests();
+      }
+    }
+
+    function updateDownloadCount(fileUrl, countElement) {
+      if (countersLoaded) {
+        // Если данные уже загружены, используем их
+        const count = allDownloadCounters[fileUrl] || "0";
+        countElement.innerHTML = count === "0" ? "" : `<span class="download-counter">${count} downloads</span>`;
+      } else {
+        // Сохраняем элемент для отложенного обновления
+        pendingCounterElements.set(fileUrl, countElement);
+      }
+    }
+
+    // Кэш для регулярных выражений
+    const regexCache = new Map();
+
+    // Подсветки найденного текста с кэшированием регулярных выражений
     function highlight(text, term) {
-      const regex = new RegExp(`(${term})`, 'gi');
-      return text.replace(regex, '<mark>$1</mark>');
+      if (!term) return text;
+
+      // Используем кэшированное регулярное выражение или создаём новое
+      if (!regexCache.has(term)) {
+        // Экранируем специальные символы в поисковом запросе
+        const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        regexCache.set(term, new RegExp(`(${escapedTerm})`, 'gi'));
+      }
+
+      return text.replace(regexCache.get(term), '<mark>$1</mark>');
+    }
+
+    // Функция для оптимистичного обновления счетчика в UI
+    function incrementDownloadCounter(countElement) {
+      // Извлекаем текущее число из элемента и увеличиваем на 1
+      let current = parseInt(countElement.textContent) || 0;
+      current++;
+      countElement.innerHTML = `<span class="download-counter">${current} downloads</span>`;
+    }
+
+    // Глобальная переменная для архитектурного фильтра
+    let currentArch = 'all';
+
+    // Функция обновления фильтров архитектур
+    function updateArchFilters() {
+      const archContainer = document.getElementById('arch-filters');
+
+      // Для Linux скрываем фильтры архитектур, а не очищаем контейнер
+      if (currentOS === 'linux') {
+        archContainer.classList.add('hidden');
+        return;
+      }
+
+      // Для других OS показываем и заполняем фильтрами
+      archContainer.classList.remove('hidden');
+      archContainer.innerHTML = ''; // очистка содержимого
+
+      const archSet = new Set();
+      // Собираем архитектуры из всех версий для текущей ОС
+      allVersions.forEach(([, data]) => {
+        if (data.links[currentOS]) {
+          Object.keys(data.links[currentOS]).forEach(arch => archSet.add(arch));
+        }
+      });
+      let archArr = [];
+      if (currentOS === 'win') {
+        // для Windows фиксированный порядок, если присутствуют в данных
+        const order = ["x86", "x64", "arm64"];
+        archArr = order.filter(arch => archSet.has(arch));
+      } else if (currentOS === 'mac') {
+        // для mac фиксированный порядок, если присутствуют в данных
+        const order = ["intel", "arm64"];
+        archArr = order.filter(arch => archSet.has(arch));
+      } else {
+        archArr = Array.from(archSet).sort();
+      }
+      // Создаем по кнопке для каждой архитектуры
+      archArr.forEach(arch => {
+        const btn = document.createElement('button');
+        btn.className = 'arch-filter-button' + (currentArch === arch ? ' active' : '');
+        btn.textContent = arch;
+        btn.addEventListener('click', () => {
+          // Если нажата уже активная кнопка, сбрасываем фильтр (возвращаемся к "всему")
+          if (currentArch === arch) {
+            currentArch = 'all';
+          } else {
+            currentArch = arch;
+          }
+          updateArchFilters();
+          reRenderVersions();
+        });
+        archContainer.appendChild(btn);
+      });
+    }
+
+    // Функция для повторного рендера версий с учетом текущих фильтров (ОС + архитектура + поиск)
+    function reRenderVersions() {
+      container.style.opacity = "0";
+      observer.unobserve(sentinel);
+      setTimeout(() => {
+        container.innerHTML = "";
+        currentIndex = 0;
+        loadMoreRows();
+        if (currentSearchResults === null && currentIndex < allVersions.length) {
+          observer.observe(sentinel);
+        } else if (currentSearchResults && currentIndex < currentSearchResults.length) {
+          observer.observe(sentinel);
+        }
+        container.style.opacity = "1";
+      }, 300);
     }
 
     // Создаем строки таблицы для одной версии
@@ -620,6 +908,8 @@
       // Фильтруем только по текущей ОС
       if (data.links[currentOS]) {
         for (const arch of Object.keys(data.links[currentOS])) {
+          // Фильтруем по архитектуре, если выбран конкретный
+          if (currentArch !== 'all' && arch !== currentArch) continue;
           const link = data.links[currentOS][arch];
           if (link) {
             archCombos.push({ arch, link });
@@ -682,19 +972,54 @@
         sizeCell.textContent = '—';
         row.appendChild(sizeCell);
 
-        // Кнопка скачать
+        // Кнопка скачать с отображением счётчика
         const actionCell = document.createElement('td');
         actionCell.className = 'action-cell';
+        const downloadContainer = document.createElement('div');
+        downloadContainer.className = 'download-container';
         const downloadLink = document.createElement('a');
         downloadLink.className = 'download-link';
-        downloadLink.href = combo.link;
-        downloadLink.target = '_blank';
+        // Заменяем установку href:
+        downloadLink.removeAttribute('href');
+        downloadLink.dataset.download = `https://broad-pine-bbc0.amd64fox1.workers.dev/?file=${encodeURIComponent(combo.link)}`;
+
+        // Формируем тултип в зависимости от OS
+        let extension = '';
+        if (currentOS === 'win') {
+          extension = '.exe';
+        } else if (currentOS === 'mac') {
+          extension = '.tbz';
+        } else if (currentOS === 'linux') {
+          extension = '.deb';
+        }
+        downloadLink.title = `download ${shortVersion}-${combo.arch}${extension}`;
+
+        downloadLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          // немедленно обновляем UI (оптимистично увеличиваем значение счетчика)
+          incrementDownloadCounter(downloadCountSpan);
+          // Обновляем глобальный кэш счетчиков
+          allDownloadCounters[combo.link] = (parseInt(allDownloadCounters[combo.link] || "0", 10) + 1).toString();
+          // параллельно посылаем асинхронный запрос к воркеру (fire-and-forget)
+          fetch(`https://broad-pine-bbc0.amd64fox1.workers.dev/?file=${encodeURIComponent(combo.link)}`, { redirect: 'manual' })
+            .catch(err => console.error('Worker update error:', err));
+          // запускаем скачивание файла сразу
+          window.open(combo.link, '_blank');
+        });
         downloadLink.innerHTML = downloadIcon;
-        actionCell.appendChild(downloadLink);
+        downloadContainer.appendChild(downloadLink);
+        // Отображения счетчика скачиваний
+        const downloadCountSpan = document.createElement('div');
+        downloadCountSpan.style.fontSize = 'small';
+        downloadCountSpan.title = "downloads"; // добавляем системный тултип
+        downloadContainer.appendChild(downloadCountSpan);
+        actionCell.appendChild(downloadContainer);
         row.appendChild(actionCell);
 
         // Обновляем инфу о дате и размере
         updateLinkInfo(dateCell, sizeCell, combo.link);
+        // Запрашиваем и обновляем счетчик скачиваний
+        updateDownloadCount(combo.link, downloadCountSpan);
 
         rows.push(row);
       });
@@ -706,18 +1031,23 @@
     let allVersions = [];
     const ITEMS_PER_BATCH = 5; // по 5 версий за раз
     let currentIndex = 0;
+    let currentSearchResults = null; // Новая переменная для результатов поиска
     const container = document.getElementById('versions-container');
 
-    // Функция подгрузки очередной порции версий
+    let currentSearchTerm = ''; // Новая переменная для хранения текущего запроса
+
+    // Функция подгрузки очередной порции версий, использует currentSearchResults если заданы
     function loadMoreRows() {
-      const endIndex = Math.min(currentIndex + ITEMS_PER_BATCH, allVersions.length);
+      const dataSource = currentSearchResults || allVersions;
+      const endIndex = Math.min(currentIndex + ITEMS_PER_BATCH, dataSource.length);
       for (let i = currentIndex; i < endIndex; i++) {
-        const [versionKey, versionData] = allVersions[i];
-        const versionRows = createVersionRows(versionKey, versionData);
+        const [versionKey, versionData] = dataSource[i];
+        // Передаём currentSearchTerm для подсветки найденного текста
+        const versionRows = createVersionRows(versionKey, versionData, currentSearchTerm);
         versionRows.forEach(r => container.appendChild(r));
       }
       currentIndex = endIndex;
-      if (currentIndex < allVersions.length) {
+      if (currentIndex < dataSource.length) {
         container.appendChild(sentinel);
       }
     }
@@ -738,21 +1068,38 @@
       });
     }, { root: null, rootMargin: '100px', threshold: 0 });
 
-    // Получаем JSON и строим таблицу
-    fetch('https://raw.githubusercontent.com/amd64fox/LoaderSpot/refs/heads/main/versions.json')
-      .then(response => response.json())
-      .then(data => {
+    async function initializeApp() {
+      try {
+        // 1. Сначала загружаем основные данные JSON
+        const response = await fetch('https://raw.githubusercontent.com/amd64fox/LoaderSpot/refs/heads/main/versions.json');
+        const data = await response.json();
+
         container.innerHTML = ''; // Очищаем "Загрузка данных..."
         allVersions = Object.entries(data);
+
+        // 2. Запускаем загрузку счетчиков скачиваний 
+        loadAllDownloadCounters().catch(err => console.error('Counter fetch error:', err));
+
+        // 3. Устанавливаем таймер для запуска HEAD-запросов если Worker не отвечает
+        headRequestsTimer = setTimeout(() => {
+          console.log('Starting HEAD requests after timeout');
+          processPendingHeadRequests();
+        }, 2000); // Ждем 2 секунды и запускаем HEAD-запросы в любом случае
+
+        // 4. Отображаем первую партию данных
         loadMoreRows();
         if (currentIndex < allVersions.length) {
           observer.observe(sentinel);
         }
-      })
-      .catch(err => {
-        console.error('Error loading data:', err);
-        container.innerHTML = '<tr><td colspan="6">Failed to load version data.</td></tr>';
-      });
+        updateArchFilters();
+      } catch (err) {
+        console.error('Error loading version data:', err);
+        container.innerHTML = '<tr><td colspan="5">Failed to load version data.</td></tr>';
+      }
+    }
+
+    // Запускаем инициализацию приложения
+    initializeApp();
 
     // Переменная для отслеживания текущей ОС
     let currentOS = 'win';
@@ -760,50 +1107,60 @@
     // Получаем ссылки на таблицу и Linux-контейнер
     const versionsTable = document.getElementById('versionsTable');
 
-    // Логика обработки кликов по кнопкам фильтрации
-    document.querySelectorAll('.filter-button').forEach(button => {
-      button.addEventListener('click', () => {
-        document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        currentOS = button.dataset.os;
-        // При смене ОС очищаем поле поиска
-        const versionSearch = document.getElementById('versionSearch');
-        versionSearch.value = "";
-        // Скрываем блок поиска, если выбрана Linux, иначе показываем
-        const searchContainer = document.querySelector('.search-container');
-        searchContainer.style.display = currentOS === 'linux' ? 'none' : 'inline-flex';
-        container.style.opacity = "0";
-        setTimeout(() => {
-          if (currentOS === 'linux') {
-            loadLinuxPackages();
-          } else {
-            container.innerHTML = "";
-            currentIndex = 0;
-            loadMoreRows();
-            if (currentIndex < allVersions.length) {
-              observer.observe(sentinel);
-            }
-          }
-          container.style.opacity = "1";
-        }, 300);
-      });
-    });
+    // Функция для сортировки результатов поиска
+    function sortSearchResults(filtered, term) {
+      return filtered.sort((a, b) => {
+        const [versionKeyA, dataA] = a;
+        const [versionKeyB, dataB] = b;
 
-    // Обработчик для поиска по версиям
+        const fullVersionA = dataA.fullversion.toLowerCase();
+        const fullVersionB = dataB.fullversion.toLowerCase();
+
+        // 1. Проверяем точное совпадение целого числа (окруженного точками или границами строки)
+        const termWithBoundaries = `(^|\\.|\\ )${term}($|\\.|\\s)`;
+        const reExact = new RegExp(termWithBoundaries);
+
+        const exactMatchA = reExact.test(versionKeyA.toLowerCase()) || reExact.test(fullVersionA);
+        const exactMatchB = reExact.test(versionKeyB.toLowerCase()) || reExact.test(fullVersionB);
+
+        // Если у одного точное совпадение, а у другого нет
+        if (exactMatchA && !exactMatchB) return -1;
+        if (!exactMatchA && exactMatchB) return 1;
+
+        // 2. Проверяем совпадение в первой части версии (до 'g')
+        // Разделяем версию на основную часть и хеш
+        const mainPartA = fullVersionA.split('g')[0];
+        const mainPartB = fullVersionB.split('g')[0];
+
+        const inMainA = mainPartA.includes(term);
+        const inMainB = mainPartB.includes(term);
+
+        // Приоритизируем совпадения в основной части версии
+        if (inMainA && !inMainB) return -1;
+        if (!inMainA && inMainB) return 1;
+
+        // 3. Дальше сортируем по версии (более новые сначала)
+        return versionKeyB.localeCompare(versionKeyA, undefined, { numeric: true, sensitivity: 'base' });
+      });
+    }
+
+    // Обработчик для поиска по версиям с ленивой загрузкой результатов
     const versionSearch = document.getElementById('versionSearch');
     versionSearch.addEventListener('input', (e) => {
       const term = e.target.value.trim().toLowerCase();
+      currentSearchTerm = term; // Сохраняем поисковый запрос
 
       container.style.opacity = "0";
 
       setTimeout(() => {
-        // Если поле пустое, возвращаем исходное поведение
+        // Если поле пустое, восстанавливаем обычную подгрузку
         if (term === "") {
+          currentSearchResults = null;
+          currentIndex = 0;
+          container.innerHTML = "";
           if (currentOS === 'linux') {
             loadLinuxPackages();
           } else {
-            container.innerHTML = "";
-            currentIndex = 0;
             loadMoreRows();
             if (currentIndex < allVersions.length) {
               observer.observe(sentinel);
@@ -813,32 +1170,39 @@
           return;
         }
 
-        // Отключаем ленивую подгрузку при поиске
-        observer.unobserve(sentinel);
-        container.innerHTML = "";
-
         // Фильтруем все версии по короткой или полной версии
         const filtered = allVersions.filter(([versionKey, data]) => {
-          return versionKey.toLowerCase().includes(term) || data.fullversion.toLowerCase().includes(term);
+          return (versionKey.toLowerCase().includes(term) ||
+            data.fullversion.toLowerCase().includes(term)) &&
+            data.links[currentOS] &&
+            (currentArch === 'all' || data.links[currentOS].hasOwnProperty(currentArch)); // Фильтруем по текущей ОС и архитектуре
         });
 
-        if (filtered.length > 0) {
-          filtered.forEach(([versionKey, data]) => {
-            const rows = createVersionRows(versionKey, data, term);
-            rows.forEach(row => container.appendChild(row));
-          });
+        // Сортируем результаты поиска
+        const sortedResults = sortSearchResults(filtered, term);
+
+        // Отключаем ленивую подгрузку с обычными данными
+        observer.unobserve(sentinel);
+        container.innerHTML = "";
+        currentIndex = 0;
+        currentSearchResults = sortedResults;
+
+        if (sortedResults.length > 0) {
+          loadMoreRows();
+          if (currentIndex < sortedResults.length) {
+            observer.observe(sentinel);
+          }
         } else {
           container.innerHTML = '<tr><td colspan="5">No results</td></tr>';
         }
-
         container.style.opacity = "1";
       }, 300);
     });
 
     // Локальные версии для Linux
     async function loadLinuxPackages() {
-      container.innerHTML = '<tr><td colspan="5">Загрузка данных...</td></tr>';
-
+      // Очищаем контейнер для Linux-версий
+      container.innerHTML = '';
       const linuxPackages = [
         {
           version: {
@@ -869,9 +1233,8 @@
           ]
         }
       ];
-
       try {
-        container.innerHTML = '';
+        // Для каждой версии Linux-пакетов формируем строки таблицы
         linuxPackages.forEach(version => {
           const versionCell = document.createElement('td');
           versionCell.className = 'version-cell';
@@ -879,10 +1242,7 @@
 
           const versionText = document.createElement('div');
           versionText.className = 'version-text';
-          versionText.innerHTML = `
-            <span class="short-version">${version.version.short}</span>
-            <span class="full-version">${version.version.full}</span>
-          `;
+          versionText.innerHTML = `<span class="short-version">${version.version.short}</span><span class="full-version">${version.version.full}</span>`;
           versionText.addEventListener('click', () => {
             navigator.clipboard.writeText(version.version.full)
               .then(() => showToast('Скопировано в буфер обмена'))
@@ -900,27 +1260,51 @@
             row.appendChild(archCell);
 
             const dateCell = document.createElement('td');
-            // Записываем вручную полученную дату
             dateCell.textContent = arch.date;
             row.appendChild(dateCell);
 
             const sizeCell = document.createElement('td');
-            // Записываем вручную указанный размер
             sizeCell.textContent = arch.size;
             row.appendChild(sizeCell);
 
+            // Кнопка скачать с обновлением счетчика
             const actionCell = document.createElement('td');
             actionCell.className = 'action-cell';
+            const downloadContainer = document.createElement('div');
+            downloadContainer.className = 'download-container';
             const downloadLink = document.createElement('a');
             downloadLink.className = 'download-link';
-            downloadLink.href = arch.link;
-            downloadLink.target = '_blank';
+            downloadLink.removeAttribute('href');
+            downloadLink.dataset.download = `https://broad-pine-bbc0.amd64fox1.workers.dev/?file=${encodeURIComponent(arch.link)}`;
+
+            // Изменяем тултип для Linux-версий
+            downloadLink.title = `download ${version.version.short}-${arch.arch}.deb`;
+
+            downloadLink.addEventListener('click', (e) => {
+              e.preventDefault();
+              // Быстро обновляем UI
+              incrementDownloadCounter(downloadCountSpan);
+              // Обновляем глобальный кэш
+              allDownloadCounters[arch.link] = (parseInt(allDownloadCounters[arch.link] || "0", 10) + 1).toString();
+              // Параллельно посылаем запрос к воркеру (fire-and-forget)
+              fetch(`https://broad-pine-bbc0.amd64fox1.workers.dev/?file=${encodeURIComponent(arch.link)}`, { redirect: 'manual' })
+                .catch(err => console.error('Worker update error:', err));
+              // Запускаем скачивание файла сразу
+              window.open(arch.link, '_blank');
+            });
             downloadLink.innerHTML = downloadIcon;
-            actionCell.appendChild(downloadLink);
+            downloadContainer.appendChild(downloadLink);
+
+            const downloadCountSpan = document.createElement('div');
+            downloadCountSpan.style.fontSize = 'small';
+            downloadCountSpan.title = "downloads";
+            downloadContainer.appendChild(downloadCountSpan);
+            actionCell.appendChild(downloadContainer);
             row.appendChild(actionCell);
 
+            // Добавляем строку в контейнер
             container.appendChild(row);
-            // Не вызываем updateLinkInfo, т.к. данные заданы вручную
+            updateDownloadCount(arch.link, downloadCountSpan);
           });
         });
       } catch (error) {
@@ -945,6 +1329,77 @@
           button.click();
         }
       }
+    });
+
+    // Обработчик для переключения вкладок (фильтрации по ОС)
+    document.querySelectorAll('.filter-button').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        currentOS = button.dataset.os;
+
+        // Сброс фильтра архитектуры, если выбранный фильтр недоступен для новой ОС
+        let availableArch = new Set();
+        allVersions.forEach(([, data]) => {
+          if (data.links[currentOS]) {
+            Object.keys(data.links[currentOS]).forEach(arch => availableArch.add(arch));
+          }
+        });
+        if (!availableArch.has(currentArch)) {
+          currentArch = 'all';
+        }
+
+        // Отменяем контроллер запросов при переключении вкладок, если таковой есть
+        container.style.opacity = "0";
+
+        // Обновляем фильтры архитектур перед анимацией контейнера
+        updateArchFilters();
+
+        setTimeout(() => {
+          // Если поисковый запрос не пустой, применяем фильтр и сортировку
+          if (currentSearchTerm !== "") {
+            // Фильтруем версии с учетом текущей ОС
+            const filtered = allVersions.filter(([versionKey, data]) => {
+              return (versionKey.toLowerCase().includes(currentSearchTerm) ||
+                data.fullversion.toLowerCase().includes(currentSearchTerm)) &&
+                data.links[currentOS] &&
+                (currentArch === 'all' || data.links[currentOS].hasOwnProperty(currentArch));
+            });
+
+            // Применяем тот же алгоритм сортировки, что и при поиске
+            const sortedResults = sortSearchResults(filtered, currentSearchTerm);
+
+            observer.unobserve(sentinel);
+            container.innerHTML = "";
+            currentIndex = 0;
+            currentSearchResults = sortedResults;
+
+            if (sortedResults.length > 0) {
+              loadMoreRows();
+              if (currentIndex < sortedResults.length) {
+                observer.observe(sentinel);
+              }
+            } else {
+              container.innerHTML = '<tr><td colspan="5">No results for selected OS</td></tr>';
+            }
+          } else {
+            // Если поиска нет, просто загружаем версии для текущей ОС
+            currentSearchResults = null;
+            if (currentOS === 'linux') {
+              loadLinuxPackages();
+            } else {
+              container.innerHTML = "";
+              currentIndex = 0;
+              loadMoreRows();
+              if (currentIndex < allVersions.length) {
+                observer.observe(sentinel);
+              }
+            }
+          }
+          container.style.opacity = "1";
+          updateArchFilters();
+        }, 300);
+      });
     });
   </script>
 </body>
