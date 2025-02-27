@@ -1,18 +1,18 @@
-﻿{
+{
     "1.2.56.502": {
         "fullversion": "1.2.56.502.ga68d2d4f",
         "size": "142990750",
         "data": "28.01.2025",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.56.502.ga68d2d4f_amd64.deb"
-        }
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.56.502.ga68d2d4f_amd64.deb"
+        }            
     },
     "1.2.53.440": {
         "fullversion": "1.2.53.440.g7b2f582a",
         "size": "143507202",
         "data": "02.01.2025",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.53.440.g7b2f582a_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.53.440.g7b2f582a_amd64.deb"
         }
     },
     "1.2.52.442": {
@@ -20,7 +20,7 @@
         "size": "143523470",
         "data": "02.12.2024",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.52.442.g01893f92_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.52.442.g01893f92_amd64.deb"
         }
     },
     "1.2.50.335": {
@@ -28,7 +28,7 @@
         "size": "143617148",
         "data": "11.11.2024",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.50.335.g5e2860a8_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.50.335.g5e2860a8_amd64.deb"
         }
     },
     "1.2.48.405": {
@@ -36,7 +36,7 @@
         "size": "143394450",
         "data": "08.10.2024",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.48.405.gf2c48e6f_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.48.405.gf2c48e6f_amd64.deb"
         }
     },
     "1.2.47.364": {
@@ -44,7 +44,7 @@
         "size": "109100472",
         "data": "20.09.2024",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.47.364.gf06e5cee_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.47.364.gf06e5cee_amd64.deb"
         }
     },
     "1.2.45.454": {
@@ -52,7 +52,7 @@
         "size": "141143192",
         "data": "26.08.2024",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.45.454.gc16ec9f6_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.45.454.gc16ec9f6_amd64.deb"
         }
     },
     "1.2.42.290": {
@@ -60,7 +60,7 @@
         "size": "140926882",
         "data": "12.07.2024",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.42.290.g242057a2_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.42.290.g242057a2_amd64.deb"
         }
     },
     "1.2.40.599": {
@@ -68,7 +68,7 @@
         "size": "140956866",
         "data": "17.06.2024",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.40.599.g606b7f29_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.40.599.g606b7f29_amd64.deb"
         }
     },
     "1.2.37.701": {
@@ -76,7 +76,7 @@
         "size": "137805232",
         "data": "03.05.2024",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.37.701.ge66eb7bc_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.37.701.ge66eb7bc_amd64.deb"
         }
     },
     "1.2.31.1205": {
@@ -84,7 +84,7 @@
         "size": "135223836",
         "data": "09.02.2024",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.31.1205.g4d59ad7c_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.31.1205.g4d59ad7c_amd64.deb"
         }
     },
     "1.2.26.1187": {
@@ -92,7 +92,7 @@
         "size": "133729904",
         "data": "04.12.2023",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.26.1187.g36b715a1_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.26.1187.g36b715a1_amd64.deb"
         }
     },
     "1.2.25.1011": {
@@ -100,7 +100,7 @@
         "size": "132587766",
         "data": "20.11.2023",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.25.1011.g0348b2ea_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.25.1011.g0348b2ea_amd64.deb"
         }
     },
     "1.2.25.1009": {
@@ -108,7 +108,7 @@
         "size": "132533054",
         "data": "17.11.2023",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.25.1009.g075ce884_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.25.1009.g075ce884_amd64.deb"
         }
     },
     "1.2.22.982": {
@@ -116,7 +116,7 @@
         "size": "124729466",
         "data": "06.10.2023",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.22.982.g794acc0a_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.22.982.g794acc0a_amd64.deb"
         }
     },
     "1.2.20.1210": {
@@ -124,7 +124,7 @@
         "size": "124183006",
         "data": "08.09.2023",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.20.1210.g2a8a8a57_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.20.1210.g2a8a8a57_amd64.deb"
         }
     },
     "1.2.18.999": {
@@ -132,7 +132,7 @@
         "size": "122391766",
         "data": "14.08.2023",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.18.999.g9b38fc27_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.18.999.g9b38fc27_amd64.deb"
         }
     },
     "1.2.13.661": {
@@ -140,7 +140,7 @@
         "size": "121793588",
         "data": "05.06.2023",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.13.661.ga588f749_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.13.661.ga588f749_amd64.deb"
         }
     },
     "1.2.11.916": {
@@ -148,7 +148,7 @@
         "size": "121053308",
         "data": "11.05.2023",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.11.916.geb595a67_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.11.916.geb595a67_amd64.deb"
         }
     },
     "1.2.8.923": {
@@ -156,7 +156,7 @@
         "size": "119841576",
         "data": "27.03.2023",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.2.8.923.g4f94bf0d_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.2.8.923.g4f94bf0d_amd64.deb"
         }
     },
     "1.1.84.716": {
@@ -164,7 +164,7 @@
         "size": "119770140",
         "data": "22.04.2022",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.1.84.716.gc5f8b819_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.1.84.716.gc5f8b819_amd64.deb"
         }
     },
     "1.1.72.439": {
@@ -172,7 +172,7 @@
         "size": "117803268",
         "data": "10.11.2021",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.1.72.439.gc253025e_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.1.72.439.gc253025e_amd64.deb"
         }
     },
     "1.1.68.632": {
@@ -180,7 +180,7 @@
         "size": "112586002",
         "data": "20.09.2021",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.1.68.632.g2b11de83_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.1.68.632.g2b11de83_amd64.deb"
         }
     },
     "1.1.67.586": {
@@ -188,7 +188,7 @@
         "size": "118938508",
         "data": "31.08.2021",
         "links": {
-            "amd64": "https://github.com/amd64fox/deb-builds/releases/download/builds/spotify-client_1.1.67.586.gbb5ef64e_amd64.deb"
+            "amd64": "https://github.com/LoaderSpot/deb-builds/releases/download/builds/spotify-client_1.1.67.586.gbb5ef64e_amd64.deb"
         }
     }
 }
