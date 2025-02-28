@@ -3,7 +3,7 @@
     "fullversion": "1.2.58.498.g6afe77b7",
     "links": {
       "win": {
-        "x86": "test",
+        "x86": "",
         "x64": "https://upgrade.scdn.co/upgrade/client/win32-x86_64/spotify_installer-1.2.58.498.g6afe77b7-407.exe",
         "arm64": "https://upgrade.scdn.co/upgrade/client/win32-arm64/spotify_installer-1.2.58.498.g6afe77b7-406.exe"
       },
