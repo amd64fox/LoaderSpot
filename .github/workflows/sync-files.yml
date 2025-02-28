@@ -1,0 +1,48 @@
+name: Sync files to table
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'versions.json'
+      - 'versions_deb.json'
+
+jobs:
+  sync-files:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+        with:
+          repository: LoaderSpot/table
+          path: table
+          token: ${{ secrets.PERSONAL_TOKEN }}
+
+      - name: Copy files
+        run: |
+          mkdir -p table/table
+          cp versions.json table/table/
+          cp versions_deb.json table/table/
+
+      - name: Commit and push changes
+        env:
+          TARGET_REPO: "https://${{ secrets.PERSONAL_TOKEN }}@github.com/LoaderSpot/table.git"
+        run: |
+          cd table
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          if ! git diff --exit-code; then
+            git add table/
+            git commit -m "Auto-sync from LoaderSpot"
+            git push "$TARGET_REPO" main
+          else
+            echo "No changes to commit"
+          fi
