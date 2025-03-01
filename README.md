@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://t.me/OfficialSpotifyUpdates"><img src="https://img.shields.io/badge/Telegram- -blue?logo=telegram" alt="Telegram"></a>
-    <a href="https://docs.google.com/spreadsheets/d/1wztO1L4zvNykBRw7X4jxP8pvo11oQjT0O5DvZ_-S4Ok/edit#gid=0"><img src="https://img.shields.io/badge/Excel%20table--brightgreen.svg?style=flat&logo=microsoftexcel&label=Excel table"></a>
+    <a href="https://loadspot.pages.dev"><img src="https://img.shields.io/badge/Excel%20table--brightgreen.svg?style=flat&logo=microsoftexcel&label=Excel table"></a>
 </p>
 
 <h1 align="center">LoaderSpot</h1>
